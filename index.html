@@ -5,12 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>鳥事求救中</title>
 <meta name="description" content="星期六，三個朋友接連傳訊息問你：撿到鳥怎麼辦？3 分鐘學會健康成鳥不打擾、落單幼鳥找爸媽、受傷生病要通報。">
-<!-- 分享預覽（FB / LINE 貼連結時顯示）【待填：正式網址與預覽圖】 -->
+<!-- 分享預覽（FB / LINE 貼連結時顯示）
+     預覽圖是同一個資料夾裡的 og-cover.png（1200×630），要和 index.html 一起上傳到 GitHub。
+     網址一定要寫完整（https:// 開頭）；如果之後搬到野灣官網，這裡的兩個網址都要改。 -->
 <meta property="og:title" content="鳥事求救中！">
 <meta property="og:description" content="朋友撿到鳥來問你，你會怎麼回？3 分鐘挑戰：你是鳥鳥救援小菜雞，還是鳥鳥救援王？">
 <meta property="og:type" content="website">
-<!-- <meta property="og:url" content="【待填：正式網址】"> -->
-<!-- <meta property="og:image" content="【待填：預覽圖網址，建議 1200×630】"> -->
+<meta property="og:locale" content="zh_TW">
+<meta property="og:site_name" content="野灣野生動物保育協會">
+<meta property="og:url" content="https://wildone-edu.github.io/bird-sos/">
+<meta property="og:image" content="https://wildone-edu.github.io/bird-sos/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="鳥事求救中！黑冠麻鷺、貓頭鷹寶寶和五色鳥在池塘邊，頭上冒出問號">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 :root{
   color-scheme:light;
@@ -74,6 +82,10 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 @keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
 .stamp{align-self:center;margin:10px 0 4px;padding:8px 18px;border:3px double var(--accent);color:var(--accent);border-radius:10px;font-family:var(--hand);font-size:20px;font-weight:900;transform:rotate(-4deg);background:rgba(251,247,239,.7);animation:stampIn .45s cubic-bezier(.2,1.6,.4,1)}
 .stamp small{display:block;font-size:12px;letter-spacing:.2em;text-align:center}
+/* 倒帶：錯誤分支的訊息變淡，下面加分隔線 */
+.b.past{opacity:.45;filter:grayscale(.7);animation:none}
+.rewind{align-self:stretch;display:flex;align-items:center;gap:10px;margin:4px 0;color:var(--ink2);font-size:13px;font-weight:700;letter-spacing:.05em}
+.rewind::before,.rewind::after{content:"";flex:1;border-top:1.5px dashed var(--line)}
 @keyframes stampIn{from{opacity:0;transform:rotate(-4deg) scale(1.8)}}
 #rep{display:grid;gap:8px;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 14px);border-top:1.5px solid var(--line);background:var(--paper2) var(--noise)}
 #rep:empty{display:none}
@@ -317,7 +329,15 @@ const CONTENT = {
     orgUrl: 'https://www.wildonetaiwan.org/',
     orgBtn: '認識野灣野生動物保育協會',
     showVerifyTags: false,                 // 改成 true 會在畫面上顯示橘色「待查證」標籤
-    gameDelay: 1000                        // 進入小遊戲前，多停留幾毫秒讓玩家看完上一句（1000＝1 秒）
+    gameDelay: 1000,                       // 進入小遊戲前，多停留幾毫秒讓玩家看完上一句（1000＝1 秒）
+    rewindLine: '⏪ 倒帶，回到剛剛',        // 選錯之後，聊天紀錄裡的分隔線文字（上方的錯誤分支會變淡）
+
+    // ── 數據收集（Google 試算表）──
+    //    trackUrl: 'https://script.google.com/macros/s/AKfycbwyqmjLQgbIiCpuROVbMUKX41aSBJujEAAVWr9VSVZ2Kt-9KdIMtfq263D-1EB_oQD2/exec',
+    //           留空＝不送出任何資料。設定步驟見《鳥事求救中_數據收集設定.md》
+    trackUrl: '',
+    // 要送到試算表的事件。start 開始、finish 完成、share 分享；可再加 replay、case_complete
+    trackEvents: ['start', 'finish', 'share']
   },
 
   // 答錯時跳出的「野灣剛好發文」通知
@@ -475,7 +495,7 @@ const CONTENT = {
           lead:'幫老媽撥出通報電話。',
           hint:'野生動物救傷通報：1999。',
           number:'1999',
-          wrong:'這支號碼不對喔。野生動物救傷通報請撥 1999。',
+          wrong:'這支號碼不對喔。野生動物救傷通報請撥 1999。',   // 撥錯號碼時，以野灣通知跳出（不算失誤）
           callLead:'電話接通了！要告訴對方哪些資訊？選出 3 項。',
           info:[
             { s:'📍 鳥在哪裡（地址）', ok:true,  r:'好的，記下地點了。' },
@@ -496,7 +516,8 @@ const CONTENT = {
         { t:'game', g:'pack', title:'安置受傷的五色鳥', v:1,
           hint:'紙箱暗暗的、可以保溫，是送醫前的臨時小窩。只放牠需要的東西。',
           steps:['戳洞透氣','墊毛巾','放鳥','封箱'],
-          leads:['點紙箱正面，戳 5 個透氣洞。','把毛巾拖進紙箱墊底。','把五色鳥輕輕放進去。','用手指從左到右劃過紙箱上方，貼上膠帶。'],
+          leads:['點紙箱正面，戳 5 個透氣洞。','把毛巾拖進紙箱墊底（也可以先點毛巾，再點紙箱）。','把五色鳥輕輕放進去。','用手指從左到右劃過紙箱上方，貼上膠帶。'],
+          tapLead:'再點一下紙箱。',          // 玩家先點選道具時的提示
           holes:5,
           items:{ towel:'毛巾', bird:'五色鳥', cage:'鳥籠', bowl:'水碗', papaya:'木瓜' },
           decoys:{
@@ -530,7 +551,7 @@ const CONTENT = {
 
   // 隔天早上的回報：ok＝這一關全對，ng＝這一關有失誤
   morning: {
-    time: '09:00', date: '9月28日 星期日',
+    time: '09:00', date: '星期日・隔天早上',   // 不寫日期，避免和真實日曆的星期對不上
     lines: {
       gt:  { ok:'今天晨跑又看到那隻麻鷺，還在草地上抓蚯蚓 😂',
              ng:'還好後來沒抓牠。今天那隻麻鷺還在草地上抓蚯蚓' },
@@ -580,12 +601,39 @@ const CONTENT = {
    ===================================================================== */
 
 /* ---------- 成效追蹤（之後接 GA4 / Meta Pixel） ---------- */
+/* 每支手機一個匿名代號（隨機亂碼，不含任何個人資料），用來計算「幾個人」而不是「幾次」 */
+const PID = (()=>{ try{ let v=localStorage.getItem('birdsos_pid'); if(!v){ v=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); localStorage.setItem('birdsos_pid', v); } return v; }catch(e){ return 'np'+Math.random().toString(36).slice(2,10); } })();
+let PLAY = '';   // 每一輪遊戲的代號，按開始或再玩一次時產生
+/* 玩家從哪裡點進來：網址上的 ?utm_source=ig 或 ?from=ig 優先，其次看 App 內建瀏覽器，再來看來源網站 */
+const SOURCE = (()=>{
+  try{
+    const q=new URLSearchParams(location.search);
+    const u=q.get('utm_source')||q.get('from'); if(u) return u.slice(0,30);
+    const ua=navigator.userAgent;
+    if(/Instagram/i.test(ua)) return 'instagram-app';
+    if(/FBAN|FBAV|FB_IAB/i.test(ua)) return 'facebook-app';
+    if(/\bLine\//i.test(ua)) return 'line-app';
+    if(document.referrer) return new URL(document.referrer).hostname.slice(0,40);
+  }catch(e){}
+  return 'direct';
+})();
 function track(name, data){
+  data = data || {};
   try{
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(Object.assign({event:'bird_'+name}, data||{}));
-    // 例：if(window.gtag) gtag('event', name, data);
-    // 例：if(window.fbq) fbq('trackCustom', name, data);
+    window.dataLayer.push(Object.assign({event:'bird_'+name}, data));
+  }catch(e){}
+  // 送到 Google 試算表（只送 trackEvents 列出的事件）
+  const url = C.meta.trackUrl;
+  if(!url || !(C.meta.trackEvents||[]).includes(name)) return;
+  try{
+    const body = JSON.stringify({ event:name, pid:PID, play:PLAY, source:SOURCE,
+      tier:data.tier||'', mistakes:(data.mistakes!=null?data.mistakes:''), method:data.method||'', result:data.result||'' });
+    // text/plain 不會觸發跨網域預檢，Apps Script 可以直接收到；sendBeacon 在關閉頁面時也送得出去
+    const blob = new Blob([body], {type:'text/plain;charset=utf-8'});
+    if(!(navigator.sendBeacon && navigator.sendBeacon(url, blob))){
+      fetch(url, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body});
+    }
   }catch(e){}
 }
 
@@ -818,7 +866,7 @@ function titleScreen(){
     <div><button class="btn pri" id="go" style="width:100%;max-width:320px;font-size:18px">${esc(C.meta.startBtn)}</button></div>
     <p class="fine">${esc(C.meta.startNote)}</p></section>`);
   APP.appendChild(el);
-  $('#go').onclick=()=>{ track('start'); playAll(); };
+  $('#go').onclick=()=>playAll();
 }
 
 /* ---------- 聊天 ---------- */
@@ -870,10 +918,15 @@ async function reply(st){
     scrollDown();
     const i=await new Promise(r=>rep.querySelectorAll('.opt:not(.used)').forEach(b=>b.onclick=()=>r(+b.dataset.i)));
     rep.innerHTML=''; const o=st.o[i];
+    const msgs=$('#msgs'), from=msgs.children.length;
     addB(esc(o.s),'me'); await sleep(500);
     if(o.ok){ if(o.then) await run(o.then); return; }
     mistake(o.id); used.add(i);
     if(o.fb) await run(o.fb);
+    // 錯誤分支結束：這段訊息變淡，加上「倒帶」分隔線，時間線才不會打架
+    [...msgs.children].slice(from).forEach(b=>b.classList.add('past'));
+    msgs.appendChild(h(`<div class="rewind" role="separator">${esc(C.meta.rewindLine||'⏪ 倒帶')}</div>`));
+    scrollDown();
   }
 }
 function note(text, art, v){
@@ -910,7 +963,10 @@ function notify(c){
 
 /* ---------- 流程 ---------- */
 async function playAll(){
+  const again = !!PLAY;
   G=newState();
+  PLAY=Math.random().toString(36).slice(2,10);
+  track('start',{result: again?'replay':'first'});
   APP.innerHTML=''; APP.appendChild(h(`<section class="screen" style="background:var(--paper) var(--noise)"></section>`));
   for(const c of C.cases){
     G.cur=c.id; G.vitOn=false;
@@ -1079,10 +1135,18 @@ GAMES.dial = cfg => new Promise(resolve=>{
   g.stage.innerHTML=`<div class="dial"><div class="num" id="dn" aria-live="polite">&nbsp;</div><div class="keys">${['1','2','3','4','5','6','7','8','9','⌫','0','撥出'].map(k=>`<button data-k="${k}" class="${k==='撥出'?'call':''}" aria-label="${k==='⌫'?'刪除':k}">${k}</button>`).join('')}</div></div>`;
   g.foot.innerHTML=`<div class="reply" id="dr">&nbsp;</div>`;
   const dn=$('#dn'), dr=$('#dr');
-  g.stage.querySelectorAll('.keys button').forEach(b=>b.onclick=()=>{
+  let busy=false;
+  g.stage.querySelectorAll('.keys button').forEach(b=>b.onclick=async()=>{
+    if(busy) return;
     const k=b.dataset.k;
     if(k==='⌫'){ num=num.slice(0,-1); }
-    else if(k==='撥出'){ if(num===cfg.number){ connected(); return; } dr.textContent=cfg.wrong; num=''; }
+    else if(k==='撥出'){
+      if(num===cfg.number){ dr.innerHTML='&nbsp;'; connected(); return; }
+      if(!num) return;
+      // 撥錯號碼：跳出野灣通知（不算失誤），關掉後清空號碼重撥
+      busy=true; vib(40); track('wrong_number',{method:num});
+      await note(cfg.wrong); num=''; busy=false;
+    }
     else if(num.length<10){ num+=k; }
     dn.innerHTML=num||'&nbsp;';
   });
@@ -1091,11 +1155,12 @@ GAMES.dial = cfg => new Promise(resolve=>{
     g.lead(esc(cfg.callLead));
     let sec=0; const picked=new Set(); let ok=0; const need=cfg.info.filter(x=>x.ok).length;
     g.stage.innerHTML=`<div style="display:grid;gap:12px;justify-items:center;width:100%"><div class="calling" id="ct">📞 通話中 00:00</div><div class="info">${cfg.info.map((x,i)=>`<button data-i="${i}">${esc(x.s)}</button>`).join('')}</div></div>`;
-    const iv=setInterval(()=>{ sec++; const e=$('#ct'); if(e) e.textContent=`📞 通話中 00:${String(sec).padStart(2,'0')}`; }, 1000);
+    const mmss=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
+    const iv=setInterval(()=>{ sec++; const e=$('#ct'); if(e) e.textContent=`📞 通話中 ${mmss(sec)}`; else clearInterval(iv); }, 1000);
     g.stage.querySelectorAll('.info button').forEach(b=>b.onclick=()=>{
       const i=+b.dataset.i; if(picked.has(i)) return; picked.add(i); const x=cfg.info[i];
       b.classList.add(x.ok?'ok':'no'); dr.textContent=x.r;
-      if(x.ok){ ok++; if(ok>=need){ clearInterval(iv); g.lead('通報完成！對方已經記下需要的資訊。'); g.foot.innerHTML=`<div class="reply">${esc(x.r)}</div><button class="btn pri" id="dok">${esc(cfg.btn)}</button>`; $('#dok').onclick=()=>{ g.close(); resolve(); }; } }
+      if(x.ok){ ok++; if(ok>=need){ clearInterval(iv); const ct=$('#ct'); if(ct) ct.textContent=`📞 通話結束 ${mmss(sec)}`; g.lead('通報完成！對方已經記下需要的資訊。'); g.foot.innerHTML=`<div class="reply">${esc(x.r)}</div><button class="btn pri" id="dok">${esc(cfg.btn)}</button>`; $('#dok').onclick=()=>{ g.close(); resolve(); }; } }
       else { drop(4); }
     });
   }
@@ -1156,9 +1221,14 @@ GAMES.pack = cfg => new Promise(resolve=>{
   const svg=$('#psvg');
   g.foot.innerHTML=`<div class="check" id="pchk">${cfg.steps.map((s,i)=>`<span data-i="${i}" class="${i===0?'now':''}">${esc(s)}</span>`).join('')}</div>
     <div class="tray" id="ptray">${Object.keys(cfg.items).map(k=>`<button class="item" data-k="${k}">${icon(k)}<span>${esc(cfg.items[k])}</span></button>`).join('')}</div>`;
-  let step=0, holes=0; const decoyHit=new Set();
+  let step=0, holes=0, sel=null; const decoyHit=new Set();
+  const clearSel=()=>{ sel=null; g.foot.querySelectorAll('#ptray .item').forEach(x=>x.classList.remove('sel')); };
+  // 先點道具、再點紙箱（給不方便拖曳的玩家）
+  const tapBox=()=>{ if(!sel) return false; const k=sel; const el=g.foot.querySelector(`#ptray .item[data-k="${k}"]`); clearSel(); if(step<cfg.leads.length) g.lead(esc(cfg.leads[step])); dropItem(k, el); return true; };
   function setStep(n){ step=n; g.foot.querySelectorAll('#pchk span').forEach((s,i)=>{ s.classList.toggle('done', i<n); s.classList.toggle('now', i===n); }); if(n<cfg.leads.length) g.lead(esc(cfg.leads[n])); }
+  $('#boxOpen').addEventListener('click', ()=>tapBox());
   $('#boxFront').addEventListener('click', e=>{
+    if(tapBox()) return;
     if(step!==0) return;
     const p=svgPt(svg, e.clientX, e.clientY);
     const hx=Math.max(64,Math.min(236,p.x)).toFixed(1), hy=Math.max(104,Math.min(172,p.y)).toFixed(1);
@@ -1186,7 +1256,8 @@ GAMES.pack = cfg => new Promise(resolve=>{
   }
   g.foot.querySelectorAll('#ptray .item').forEach(el=>{
     const k=el.dataset.k;
-    draggable(el, (x,y)=>{ if(inRect(x,y,box,24) || inRect(x,y,$('#boxOpen'),10)) dropItem(k, el); }, ()=>toast('按住道具，拖進紙箱裡。'));
+    draggable(el, (x,y)=>{ clearSel(); if(inRect(x,y,box,24) || inRect(x,y,$('#boxOpen'),10)) dropItem(k, el); },
+      ()=>{ const was=sel===k; clearSel(); if(was) return; sel=k; el.classList.add('sel'); g.lead(esc(cfg.tapLead||'再點一下紙箱。')); });
   });
   function enableTape(){
     const hit=$('#lidHit'); let sx=null, taped=false;
@@ -1343,16 +1414,18 @@ function resultScreen(){
 /* ---------- 分享 ---------- */
 function shareUrl(){ return C.meta.shareUrl || location.href.split('#')[0]; }
 function shareText(){ return C.share.text.replace('{title}', tier().title); }
+/* 分享紀錄：method＝image 限動圖／link 分享給朋友／copy 複製連結
+   result＝done 完成分享、cancel 打開後取消、saved 顯示圖片讓玩家長按儲存、copied 已複製 */
+const shareLog=(method, result)=>track('share',{method, result, tier:tier().title});
 async function shareLink(){
-  track('share',{method:'link'});
-  if(navigator.share){ try{ await navigator.share({title:C.share.title, text:shareText(), url:shareUrl()}); return; }catch(e){ if(e.name==='AbortError') return; } }
-  copyLink();
+  if(navigator.share){ try{ await navigator.share({title:C.share.title, text:shareText(), url:shareUrl()}); shareLog('link','done'); return; }catch(e){ if(e.name==='AbortError'){ shareLog('link','cancel'); return; } } }
+  copyLink('link');
 }
-function copyLink(){
-  track('share',{method:'copy'});
+function copyLink(method){
   const txt=shareText()+' '+shareUrl();
   const fallback=()=>{ const i=$('#curl'); i.value=txt; i.style.left='0'; i.select(); try{ document.execCommand('copy'); toast('已複製連結'); }catch(e){ toast('請長按選取網址複製'); } i.style.left='-9999px'; };
   if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>toast('已複製連結'), fallback); } else fallback();
+  shareLog(typeof method==='string'?method:'copy','copied');
 }
 function loadImg(src){ return new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; }); }
 async function makeCard(){
@@ -1382,19 +1455,19 @@ async function makeCard(){
 }
 function roundRect(x,a,b,w,hh,r){ x.beginPath(); x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+hh,r); x.arcTo(a+w,b+hh,a,b+hh,r); x.arcTo(a,b+hh,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath(); }
 async function shareImage(){
-  track('share',{method:'image'});
   const btn=$('#aimg'); btn.disabled=true; const old=btn.textContent; btn.textContent='產生圖片中……';
   try{
     const cv=await makeCard();
     const blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-    const file=new File([blob],'bird-doctor.png',{type:'image/png'});
+    const file=new File([blob],'bird-sos.png',{type:'image/png'});
     if(navigator.canShare && navigator.canShare({files:[file]})){
-      try{ await navigator.share({files:[file], title:C.share.title, text:shareText()+' '+shareUrl()}); return; }
-      catch(e){ if(e.name==='AbortError') return; }
+      try{ await navigator.share({files:[file], title:C.share.title, text:shareText()+' '+shareUrl()}); shareLog('image','done'); return; }
+      catch(e){ if(e.name==='AbortError'){ shareLog('image','cancel'); return; } }
     }
     const u=URL.createObjectURL(blob);
-    const ov=h(`<div id="imgov" role="dialog" aria-label="分享圖"><img src="${u}" alt="${esc(tier().title)} 分享圖"><p>長按圖片即可儲存，再分享到限時動態</p><div class="row"><a class="btn" href="${u}" download="bird-doctor.png">下載圖片</a><button class="btn pri" id="ovx">關閉</button></div></div>`);
+    const ov=h(`<div id="imgov" role="dialog" aria-label="分享圖"><img src="${u}" alt="${esc(tier().title)} 分享圖"><p>長按圖片即可儲存，再分享到限時動態</p><div class="row"><a class="btn" href="${u}" download="bird-sos.png">下載圖片</a><button class="btn pri" id="ovx">關閉</button></div></div>`);
     APP.appendChild(ov); $('#ovx').onclick=()=>ov.remove();
+    shareLog('image','saved');
   } finally { btn.disabled=false; btn.textContent=old; }
 }
 
