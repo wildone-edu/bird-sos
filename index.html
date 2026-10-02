@@ -206,7 +206,7 @@ input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;bac
 .mb.me{justify-content:flex-end}
 .mb .av{width:32px;height:32px;font-size:14px}
 .mb .b{max-width:78%}
-.trap{display:block;margin-top:6px;min-height:40px;padding:0 14px;border-radius:20px;border:1.5px dashed var(--accentD);background:#fff3e8;font-size:14px;font-weight:700;color:var(--accentD)}
+.trap{display:block;margin-top:6px;min-height:40px;padding:0 14px;border-radius:20px;border:1.5px dashed #eab08d;background:#fffaf5;font-size:14px;font-weight:700;color:#c47a4f}
 .trap:disabled{opacity:.6;text-decoration:line-through}
 /* 忍住別按 */
 .tempt{position:absolute;z-index:3;min-height:48px;padding:0 16px;border-radius:24px;border:2px solid var(--accentD);background:#fff3e8;font-size:15px;font-weight:700;animation:wiggle .5s ease-in-out infinite alternate;box-shadow:0 6px 16px rgba(59,54,49,.2)}
@@ -400,6 +400,7 @@ const CONTENT = {
     madeBy: '由野灣野生動物保育協會製作',     // 封面最下方 logo 底下的淺灰色小字
     logo: '',                              // 野灣 logo：留空＝使用程式內建的 logo 圖；也可以填圖片網址
     sound: true,                           // 音效預設開啟；改成 false 就預設關閉（玩家仍可在右上角切換）
+    soundVolume: 1.6,                      // 音效總音量（1＝原本大小，數字越大越大聲，建議 1 到 2）
     day: '星期六',
     shareUrl: '',                          // 【待填：正式網址】留空時自動使用目前網址
     org: '野灣野生動物保育協會',
@@ -442,7 +443,7 @@ const CONTENT = {
   /* 錯誤結局清單：錯誤筆記與「錯誤結局收集」會用到
      name 是做了什麼、learn 是學到的一句話、cat 是分類（對應上面 cats） */
   wrongs: {
-    heron_grab:  { name:'叫學長把麻鷺抓去醫院', learn:'健康的鳥不需要幫忙，硬抓會讓人鳥都受傷', cat:'health' },
+    heron_grab:  { name:'叫學長把黑冠麻鷺抓去醫院', learn:'健康的鳥不需要幫忙，硬抓會讓人鳥都受傷', cat:'health' },
     heron_close: { name:'靠太近拍照',           learn:'保持距離，別讓牠停下來提防你', cat:'health' },
     owl_home:    { name:'讓學妹把寶寶帶回宿舍', learn:'鳥寶寶最好的照顧者是牠爸媽', cat:'orphan' },
     owl_box:     { name:'直接把寶寶裝箱送走',   learn:'先找爸媽，找不到再通報', cat:'orphan' },
@@ -646,10 +647,10 @@ const CONTENT = {
   morning: {
     time: '9:00', date: '隔天早上',
     lines: {
-      gt:  { ok:'今天晨跑又看到那隻麻鷺，還在草地上抓蚯蚓 😂',
-             ng:'還好後來沒抓牠。今天那隻麻鷺還在草地上抓蚯蚓' },
+      gt:  { ok:'今天晨跑又看到那隻黑冠麻鷺，還在草地上抓蚯蚓 😂',
+             ng:'還好後來沒抓牠。今天那隻黑冠麻鷺還在草地上抓蚯蚓' },
       mi:  { ok:'昨晚牠爸媽一直在附近守著！', ng:'差點就把牠帶走了，幸好有先找爸媽', v:1 },
-      mom: { ok:'救傷單位說我們處理得很好，牠正在接受照顧', ng:'救傷單位說，下次越早通報越好', v:1 }
+      mom: { ok:'救傷單位說，感謝即時送來，五色鳥正在進行醫療中', ng:'救傷單位說，下次越早通報越好', v:1 }
     },
     btn: '看看我的救援稱號'
   },
@@ -678,9 +679,9 @@ const CONTENT = {
     sub: '點擊查看動物受傷原因，以及野灣真實救援過的動物病患們。',
     btn: '看救援故事：',                    // 按鈕上的字，後面會接故事標題
     items: [
-      { name:'失親',     desc:'鳥寶寶學飛時掉到地上很常見，常被誤以為被拋棄而帶走；也有些是巢被破壞，真的和爸媽分開了。',
+      { name:'失親',     desc:'鳥寶寶在學飛時掉在地上很常見，常被誤以為是被親鳥拋棄而被人帶走；也有些是鳥巢真的被破壞、或者親鳥遇到其他危險而死亡，無法回來照顧雛幼鳥。',
         title:'落單的小環頸雉',               url:'https://www.wildonetaiwan.org/story/914' },
-      { name:'遊蕩犬貓', desc:'在外遊蕩的貓狗會追咬野生動物，就算只是小小的傷口，也可能引起嚴重感染。',
+      { name:'遊蕩犬貓', desc:'犬貓並非野生動物。在外遊蕩的貓、狗常追咬野生動物，造成嚴重的傷勢甚至造成野生動物死亡。',
         title:'疑似貓咬的紅嘴黑鵯',           url:'https://www.wildonetaiwan.org/story/712' },
       { name:'車禍',     desc:'道路穿過動物生活的地方，牠們過馬路或在路邊覓食時，很容易被車撞到。',
         title:'東台灣少見的黑鳶',             url:'https://www.wildonetaiwan.org/story/701' },
@@ -772,8 +773,10 @@ const mapSrc = () => C.mapImage || MAP_BUILTIN;
 const SFX = (()=>{
   let ctx=null, on=C.meta.sound!==false;
   try{ const v=localStorage.getItem('birdsos_sound'); if(v) on = v==='on'; }catch(e){}
-  try{ if(navigator.audioSession) navigator.audioSession.type='ambient'; }catch(e){}
-  let unlocked=false;
+  // （v0.7 起不再手動設定 iPhone 的 audioSession；iPhone 預設就會在靜音模式時不出聲）
+  let unlocked=false, mg=null;
+  // 總音量（手機喇叭比較小聲，整體放大一點）
+  function master(){ if(!mg){ mg=ctx.createGain(); mg.gain.value=C.meta.soundVolume||1.6; mg.connect(ctx.destination); } return mg; }
   function ac(){
     if(!ctx){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return null; try{ ctx=new A(); }catch(e){ return null; } }
     // iPhone 的狀態可能是 suspended 或 interrupted（例如從 LINE 切回來），只要不是 running 就喚醒
@@ -800,7 +803,7 @@ const SFX = (()=>{
     g.gain.exponentialRampToValueAtTime(0.0001, t+d);
     let out=os;
     if(o.lp){ const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.frequency.value=o.lp; os.connect(fl); out=fl; }   // 讓鋸齒波聽起來像小號
-    out.connect(g).connect(c.destination); os.start(t); os.stop(t+d+.05);
+    out.connect(g).connect(master()); os.start(t); os.stop(t+d+.05);
   }
   // 雜音：用來做撕膠帶、拍翅、咻的聲音
   function noise(d, o={}){
@@ -811,7 +814,7 @@ const SFX = (()=>{
     const fl=c.createBiquadFilter(); fl.type=o.ft||'bandpass'; fl.frequency.setValueAtTime(o.f0||1200,t); if(o.f1) fl.frequency.exponentialRampToValueAtTime(o.f1,t+d); fl.Q.value=o.q||1;
     const g=c.createGain(), v=o.vol||.12;
     g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v,t+(o.att||.01)); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
-    src.connect(fl).connect(g).connect(c.destination); src.start(t); src.stop(t+d+.05);
+    src.connect(fl).connect(g).connect(master()); src.start(t); src.stop(t+d+.05);
   }
   const DTMF={1:[697,1209],2:[697,1336],3:[697,1477],4:[770,1209],5:[770,1336],6:[770,1477],7:[852,1209],8:[852,1336],9:[852,1477],0:[941,1336]};
   const LIB={
@@ -849,6 +852,18 @@ const SFX = (()=>{
   };
 })();
 const sfx = (n, a) => SFX.play(n, a);
+/* 音效檢測（網址加上 ?sounddebug=1 才會出現）：顯示狀態，並有一個測試按鈕 */
+if(/sounddebug/.test(location.search)){
+  window.addEventListener('load', ()=>{
+    const d=document.createElement('div');
+    d.style.cssText='position:fixed;left:8px;bottom:8px;z-index:999;background:#222;color:#fff;font:12px/1.5 monospace;padding:8px 10px;border-radius:8px;max-width:92vw;opacity:.92';
+    const info=()=>{ let st='?'; try{ st=localStorage.getItem('birdsos_sound'); }catch(e){} return `音效開關: ${SFX.isOn()?'開':'關'}（紀錄 ${st}）<br>聲音引擎: ${SFX.state()}<br>AudioContext: ${!!(window.AudioContext||window.webkitAudioContext)}<br>audioSession: ${navigator.audioSession?navigator.audioSession.type:'無'}`; };
+    d.innerHTML=`<div id="sdi">${info()}</div><button id="sdb" style="margin-top:6px;padding:8px 12px;font-size:14px">▶ 測試音效</button>`;
+    document.body.appendChild(d);
+    d.querySelector('#sdb').onclick=()=>{ SFX.unlock(); sfx('win'); setTimeout(()=>{ d.querySelector('#sdi').innerHTML=info(); },400); };
+    setInterval(()=>{ d.querySelector('#sdi').innerHTML=info(); },1500);
+  });
+}
 // iOS 需要在玩家第一次觸碰畫面時啟動音效
 // iPhone 只承認 touchend／click 這類「放開」動作是玩家操作，所以多掛幾種事件
 ['touchend','pointerup','click','keydown'].forEach(ev=>document.addEventListener(ev, ()=>SFX.unlock(), {capture:true, passive:true}));
@@ -1624,7 +1639,7 @@ function resultScreen(){
     const cat=C.cats[ck], list=ids.filter(id=>C.wrongs[id] && C.wrongs[id].cat===ck);
     return `<div class="cat"><h4><i style="background:${cat.color}"></i>${esc(cat.name)}<small>－ ${esc(cat.who||'')}</small></h4>${list.length?fn(list):`<div class="none">${esc(empty)}</div>`}</div>`;
   }).join('');
-  const notes=byCat(G.log, list=>`<ul class="log">${list.map(id=>{ const w=C.wrongs[id]; return `<li><span class="x">✗</span><div><b>${esc(w.name)}</b><br><span class="l">→ ${esc(w.learn)}</span></div></li>`; }).join('')}</ul>`, '這一關沒有選錯 ✓');
+  const notes=byCat(G.log, list=>`<ul class="log">${list.map(id=>{ const w=C.wrongs[id]; return `<li><span class="x">✗</span><div><b>${esc(w.name)}</b><br><span class="l">→ ${esc(w.learn)}</span></div></li>`; }).join('')}</ul>`, '你的行動很正確，做得好！');
   const causes=C.more.items.map((m,i)=>`<button class="cause" data-i="${i}" aria-expanded="false" aria-controls="storybox">${esc(m.name)}</button>`).join('');
   const el=h(`<section class="screen" id="result">
     <div class="rcard">
