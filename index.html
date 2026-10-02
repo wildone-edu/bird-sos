@@ -262,8 +262,8 @@ input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;bac
 .cat h4 i{width:10px;height:10px;border-radius:50%;display:inline-block}
 .cat h4 small{font-weight:600;color:var(--ink2)}
 .cat .none{font-size:13px;color:var(--ink2);padding:4px 0}
-.causes{display:flex;flex-wrap:wrap;gap:8px}
-.cause{min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid var(--line);background:var(--card);font-size:15px;font-weight:800;box-shadow:0 2px 0 var(--line)}
+.causes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cause{min-height:48px;padding:0 6px;border-radius:22px;border:1.5px solid var(--line);background:var(--card);font-size:15px;font-weight:800;box-shadow:0 2px 0 var(--line)}
 .cause[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper);box-shadow:none}
 .storybox{margin-top:10px}
 .storybox a{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;background:var(--card);border:1.5px solid var(--line);color:var(--ink);text-decoration:none;animation:pop .25s}
@@ -299,6 +299,62 @@ input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;bac
 #toast{position:absolute;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 90px);transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:22px;font-size:14px;font-weight:700;opacity:0;transition:.3s;z-index:90;pointer-events:none;max-width:90%;text-align:center}
 #toast.on{opacity:1;transform:translateX(-50%)}
 
+/* ===== v0.6 新增 ===== */
+/* 音效開關（畫面右上角） */
+#sfx{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);right:10px;z-index:55;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:rgba(251,247,239,.92);display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgba(59,54,49,.15)}
+#sfx svg{width:22px;height:22px;display:block}
+.chat-h{padding-right:62px}
+.g-h .row{padding-right:50px}
+#notif{right:62px}
+/* 野灣 logo */
+.logo-corner{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);left:16px;width:92px;height:auto;display:block}
+.logo-foot{display:block;width:120px;height:auto;margin:22px auto 0;opacity:.9}
+/* 封面 */
+#title .start{display:grid;gap:6px;justify-items:center}
+#title .start small{font-size:13px;color:var(--ink2)}
+/* 找爸媽：躲起來等 */
+.hidewrap{display:grid;gap:6px;justify-items:center}
+.hidecue{font-size:14px;font-weight:800;color:var(--accentD);display:flex;align-items:center;gap:6px;animation:bob 1s ease-in-out infinite}
+.hidecue.off{visibility:hidden}
+@keyframes bob{50%{transform:translateY(6px)}}
+.hold.bush{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:84px;border-radius:36px;background:#e7ecd9;border:2.5px solid var(--moss);box-shadow:0 4px 0 var(--moss);animation:holdPulse 1.6s ease-in-out infinite}
+.hold.bush.on{animation:none;transform:translateY(3px);box-shadow:0 1px 0 var(--moss)}
+.hold.bush svg{width:76px;height:56px;position:relative;flex:0 0 auto}
+.hold.bush span{text-align:left;line-height:1.3}
+.hold.bush span small{display:block;font-size:12.5px;font-weight:600;color:var(--ink2)}
+@keyframes holdPulse{50%{box-shadow:0 4px 0 var(--moss),0 0 0 8px rgba(142,160,122,.3)}}
+.bushfg{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;transform:translateY(105%);transition:transform .5s ease-out}
+.bushfg.on{transform:none}
+.bushfg svg{width:100%;height:100%;display:block}
+.shush{position:absolute;top:10px;left:50%;transform:translateX(-50%);padding:5px 14px;border-radius:16px;background:rgba(59,54,49,.75);color:#fff;font-size:13px;font-weight:700;pointer-events:none;opacity:0;transition:opacity .3s}
+.shush.on{opacity:1}
+/* 鳥籠還是紙箱 */
+.pick2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(100%,360px)}
+.pick2 button{border-radius:20px;border:2px solid var(--line);background:var(--card);padding:12px 8px 14px;display:grid;justify-items:center;gap:6px;font-size:17px;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.pick2 button svg{width:100%;max-width:130px;height:auto;display:block}
+.pick2 button small{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.pick2 button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.pick2 button.no{border-color:var(--ng);opacity:.55}
+.pick2 button.no b::before{content:"✗ ";color:var(--ng)}
+.pick2 button.yes{border-color:var(--ok);background:rgba(79,122,69,.1)}
+.pick2 button.yes b::before{content:"✓ ";color:var(--ok)}
+/* 紙箱：互動位置提示 */
+.cue-tap{animation:cueTap 1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes cueTap{50%{transform:translateY(-8px)}}
+.cue-slide{animation:cueSlide 1.6s ease-in-out infinite}
+@keyframes cueSlide{0%{transform:translateX(0);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateX(170px);opacity:0}}
+/* 結果頁按鈕 */
+.acts .btn{line-height:1.3;text-align:center;padding:6px 10px;text-wrap:balance}
+@media (max-width:380px){.acts .btn:not(.wide){font-size:15px;letter-spacing:0}}
+/* 傷病原因卡片 */
+.causelist{display:grid;gap:10px}
+.cz{padding:14px;border-radius:16px;background:var(--card);border:1.5px solid var(--line);animation:pop .25s}
+.cz h4{margin:0 0 4px;font-size:16px;font-weight:900}
+.cz p{margin:0 0 10px;font-size:14.5px;line-height:1.65;color:var(--ink)}
+.cz a{display:flex;align-items:center;gap:8px;min-height:46px;padding:6px 14px;border-radius:12px;background:#fbe3d3;border:1.5px solid var(--accent);color:var(--accentD);text-decoration:none;font-size:14.5px;font-weight:800;line-height:1.4}
+.cz a::after{content:"→";margin-left:auto;font-size:18px}
+.cz a:active{background:#f6d2bb}
+
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -320,9 +376,11 @@ input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;bac
 const CONTENT = {
   meta: {
     title: '鳥事求救中！',
-    tagline: '星期六，三個朋友接連傳訊息來問你：<br><b>「這隻鳥怎麼辦？」</b>',
-    startBtn: '開始（約 3 分鐘）',
-    startNote: '全程不需要開聲音',
+    tagline: '三個朋友接連傳訊息來問你：<br><b>「這隻鳥怎麼辦？」</b>',
+    startBtn: '開始',
+    startNote: '約 3 分鐘',                 // 「開始」按鈕底下的小字
+    logo: '',                              // 野灣 logo：留空＝使用程式內建的 logo 圖；也可以填圖片網址
+    sound: true,                           // 音效預設開啟；改成 false 就預設關閉（玩家仍可在右上角切換）
     day: '星期六',
     shareUrl: '',                          // 【待填：正式網址】留空時自動使用目前網址
     org: '野灣野生動物保育協會',
@@ -331,6 +389,7 @@ const CONTENT = {
     showVerifyTags: false,                 // 改成 true 會在畫面上顯示橘色「待查證」標籤
     gameDelay: 1000,                       // 進入小遊戲前，多停留幾毫秒讓玩家看完上一句（1000＝1 秒）
     rewindLine: '⏪ 倒帶，回到剛剛',        // 選錯之後，聊天紀錄裡的分隔線文字（上方的錯誤分支會變淡）
+    endDelay: 1500,                        // 最後一關（老媽）結束後，多停留幾毫秒讓玩家看完訊息，再進到「隔天早上」
 
     // ── 數據收集（Google 試算表）──
     // 下一行 trackUrl：Apps Script 部署後拿到的網址（https://script.google.com/macros/s/…/exec）
@@ -455,8 +514,12 @@ const CONTENT = {
           decoy:'這是綠繡眼，不是寶寶的爸媽喔。',
           leaf:'這裡只有樹葉。',
           found:'找到了！牠在樹上盯著寶寶。',
-          holdLead:'現在退到遠處。按住下面的按鈕，靜靜等牠飛下來。',
-          holdBtn:'按住：躲在遠處靜靜等',
+          holdLead:'人在旁邊，牠不敢下來。要躲遠一點才行！',
+          holdCue:'按住下面的樹叢按鈕',            // 按鈕上方會上下跳動的提示
+          holdBtn:'按住不放，躲在樹叢後面',
+          holdSub:'放開就會被發現喔',
+          holdTapOwl:'按住下面的樹叢按鈕，躲起來等。',  // 玩家去點大貓頭鷹時的提示
+          holding:'噓……躲好別動',
           early:'你一動，大貓頭鷹又縮回樹叢了。再試一次。',
           success:'牠飛下來了，就停在寶寶旁邊！',
           btn:'太好了' },
@@ -504,7 +567,7 @@ const CONTENT = {
             { s:'🔤 牠的學名是什麼',   ok:false, r:'不知道學名也沒關係，說得出樣子就好。' },
             { s:'💕 我覺得牠好可愛',   ok:false, r:'呃……謝謝分享。請問地點是？' } ],
           btn:'通報完成' },
-        { t:'msg', s:'他們說會聯絡救傷單位，要我們先把牠裝進紙箱。', v:1 },
+        { t:'msg', s:'他們說會聯絡救傷單位，要我們先把牠安置好，等他們來。', v:1 },
         { t:'msg', s:'那我要怎麼把牠抓起來？' },
         { t:'game', g:'tools', title:'選一個工具', v:1,
           lead:'把工具拖到鳥身上（也可以先點工具，再點鳥）。',
@@ -513,18 +576,27 @@ const CONTENT = {
           handBurst:'啪啪啪！',
           handNote:'徒手抓，鳥一掙扎，人和鳥都容易受傷。用毛巾或手套輕輕蓋住，再捧起來。',
           ok:'輕輕蓋住，再慢慢捧起來。' },
+        /* 選小窩：鳥籠還是紙箱（選鳥籠＝錯誤 pack_cage） */
+        { t:'game', g:'container', title:'牠要待在哪裡？', v:1,
+          lead:'老媽家裡剛好有以前養鸚鵡的鳥籠，也有一個紙箱。要讓五色鳥待在哪裡？',
+          hint:'受傷的鳥很容易緊張。想想看：哪一個暗暗的、看不到外面？',
+          cage:{ name:'鳥籠', sub:'有現成的，看得到牠' },
+          box: { name:'紙箱', sub:'暗暗的，看不到外面' },
+          cageBurst:'砰砰砰！',
+          cageNote:'鳥籠透光又空曠，鳥一緊張就會一直撞，羽毛也會磨壞。紙箱暗暗的，牠比較安心。',
+          ok:'選得好！暗暗的紙箱讓牠比較安心。接下來把紙箱布置好。',
+          btn:'來布置紙箱' },
         { t:'game', g:'pack', title:'安置受傷的五色鳥', v:1,
           hint:'紙箱暗暗的、可以保溫，是送醫前的臨時小窩。只放牠需要的東西。',
           steps:['戳洞透氣','墊毛巾','放鳥','封箱'],
           leads:['點紙箱正面，戳 5 個透氣洞。','把毛巾拖進紙箱墊底（也可以先點毛巾，再點紙箱）。','把五色鳥輕輕放進去。','用手指從左到右劃過紙箱上方，貼上膠帶。'],
           tapLead:'再點一下紙箱。',          // 玩家先點選道具時的提示
           holes:5,
-          items:{ towel:'毛巾', bird:'五色鳥', cage:'鳥籠', bowl:'水碗', papaya:'木瓜' },
+          items:{ towel:'毛巾', bird:'五色鳥', bowl:'水碗', papaya:'木瓜' },
           decoys:{
-            cage:  '鳥籠透光又空曠，鳥會一直撞，羽毛也會磨壞。紙箱暗暗的，牠比較安心。',
             bowl:  '路上一晃，水就打翻，把牠弄濕會失溫。',
             papaya:'餵錯食物可能造成嚴重傷害。紙箱只是送醫前的暫時安置，不用準備食物。' },
-          decoyBurst:{ cage:'砰砰砰！', bowl:'嘩啦！', papaya:'咦？' },
+          decoyBurst:{ bowl:'嘩啦！', papaya:'咦？' },
           needHoles:'先幫紙箱戳幾個透氣洞。',
           needTowel:'先墊毛巾，牠躺起來比較舒服。',
           tapeBtn:'點這裡貼膠帶',
@@ -551,7 +623,7 @@ const CONTENT = {
 
   // 隔天早上的回報：ok＝這一關全對，ng＝這一關有失誤
   morning: {
-    time: '09:00', date: '星期日・隔天早上',   // 不寫日期，避免和真實日曆的星期對不上
+    time: '9:00', date: '隔天早上',
     lines: {
       gt:  { ok:'今天晨跑又看到那隻麻鷺，還在草地上抓蚯蚓 😂',
              ng:'還好後來沒抓牠。今天那隻麻鷺還在草地上抓蚯蚓' },
@@ -575,20 +647,28 @@ const CONTENT = {
     text: '我在「鳥事求救中！」拿到「{title}」！朋友撿到鳥來問你，你會怎麼回？',
     cardKicker: '我的救援稱號是',
     cardLine: '換你試試看，會拿到哪一級？',
-    btnShare: '分享給朋友', btnImage: '下載限動圖', btnCopy: '複製連結', btnAgain: '🔁 再玩一次'
+    btnShare: '分享給朋友', btnImage: '下載鳥鳥救援稱號圖', btnAgain: '🔁 再玩一次'
   },
 
-  // 結果頁「野生動物為什麼會受傷？」：點分類展開野灣真實救援案例
+  // 結果頁「野生動物為什麼會受傷？」
+  // name 傷病原因、desc 一句話說明（【需要 Sunny 查證】）、title 野灣故事標題、url 故事連結
   more: {
     heading: '野生動物為什麼會受傷？',
-    sub: '查看野灣真實救援案例故事',
+    sub: '點擊查看動物受傷原因，以及野灣真實救援過的動物病患們。',
+    btn: '看救援故事：',                    // 按鈕上的字，後面會接故事標題
     items: [
-      { name:'失親',     title:'落單的小環頸雉',               url:'https://www.wildonetaiwan.org/story/914' },
-      { name:'遊蕩犬貓', title:'疑似貓咬的紅嘴黑鵯',           url:'https://www.wildonetaiwan.org/story/712' },
-      { name:'車禍',     title:'東台灣少見的黑鳶',             url:'https://www.wildonetaiwan.org/story/701' },
-      { name:'窗戶撞擊', title:'小歪，飛往另一片藍天',         url:'https://www.wildonetaiwan.org/story/122' },
-      { name:'黏鼠板',   title:'雨傘節被定格的覓食瞬間',       url:'https://www.wildonetaiwan.org/story/185' },
-      { name:'私養',     title:'把野生動物留在身邊的愛不是愛', url:'https://www.wildonetaiwan.org/story/551' }
+      { name:'失親',     desc:'鳥寶寶學飛時掉到地上很常見，常被誤以為被拋棄而帶走；也有些是巢被破壞，真的和爸媽分開了。',
+        title:'落單的小環頸雉',               url:'https://www.wildonetaiwan.org/story/914' },
+      { name:'遊蕩犬貓', desc:'在外遊蕩的貓狗會追咬野生動物，就算只是小小的傷口，也可能引起嚴重感染。',
+        title:'疑似貓咬的紅嘴黑鵯',           url:'https://www.wildonetaiwan.org/story/712' },
+      { name:'車禍',     desc:'道路穿過動物生活的地方，牠們過馬路或在路邊覓食時，很容易被車撞到。',
+        title:'東台灣少見的黑鳶',             url:'https://www.wildonetaiwan.org/story/701' },
+      { name:'窗戶撞擊', desc:'鳥看不出透明或反光的玻璃，以為前面是天空或樹林，就直接撞上去。',
+        title:'小歪，飛往另一片藍天',         url:'https://www.wildonetaiwan.org/story/122' },
+      { name:'黏鼠板',   desc:'黏鼠板不只黏到老鼠，鳥、蛇、蜥蜴也常誤觸，越掙扎黏得越緊。',
+        title:'雨傘節被定格的覓食瞬間',       url:'https://www.wildonetaiwan.org/story/185' },
+      { name:'私養',     desc:'把野生動物帶回家養，常因為吃的、住的不對而生病，也會失去回到野外生活的能力。',
+        title:'把野生動物留在身邊的愛不是愛', url:'https://www.wildonetaiwan.org/story/551' }
     ]
   },
 
@@ -654,6 +734,99 @@ function inRect(x, y, el, pad=10){ const r=el.getBoundingClientRect(); return x>
 const showEl = s => $(s).removeAttribute('hidden');
 const hideEl = s => $(s).setAttribute('hidden','');
 function svgPt(svg, cx, cy){ const p=svg.createSVGPoint(); p.x=cx; p.y=cy; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+
+/* ---------- 野灣 logo（內建圖檔，360×138 透明背景） ---------- */
+const LOGO_BUILTIN = 'data:image/png;base64,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';
+const logoSrc = () => C.meta.logo || LOGO_BUILTIN;
+
+/* ---------- 音效（用程式即時合成，不需要音檔；沒有背景音樂） ----------
+   ・玩家可用右上角按鈕開關，選擇會記在這支手機上
+   ・iPhone 開靜音模式時不會發出聲音（尊重玩家的靜音設定） */
+const SFX = (()=>{
+  let ctx=null, on=C.meta.sound!==false;
+  try{ const v=localStorage.getItem('birdsos_sound'); if(v) on = v==='on'; }catch(e){}
+  try{ if(navigator.audioSession) navigator.audioSession.type='ambient'; }catch(e){}
+  function ac(){
+    if(!ctx){ const A=window.AudioContext||window.webkitAudioContext; if(!A) return null; try{ ctx=new A(); }catch(e){ return null; } }
+    if(ctx.state==='suspended') ctx.resume();
+    return ctx;
+  }
+  // 單音：f 頻率、d 長度（秒）、at 延遲、slide 滑音終點頻率
+  function tone(f, d, o={}){
+    const c=ctx, t=c.currentTime+(o.at||0), v=o.vol||.16;
+    const os=c.createOscillator(), g=c.createGain();
+    os.type=o.type||'sine'; os.frequency.setValueAtTime(f,t);
+    if(o.slide) os.frequency.exponentialRampToValueAtTime(Math.max(30,o.slide), t+d);
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v, t+(o.att||.008));
+    if(o.hold) g.gain.setValueAtTime(v, t+d*o.hold);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+d);
+    let out=os;
+    if(o.lp){ const fl=c.createBiquadFilter(); fl.type='lowpass'; fl.frequency.value=o.lp; os.connect(fl); out=fl; }   // 讓鋸齒波聽起來像小號
+    out.connect(g).connect(c.destination); os.start(t); os.stop(t+d+.05);
+  }
+  // 雜音：用來做撕膠帶、拍翅、咻的聲音
+  function noise(d, o={}){
+    const c=ctx, t=c.currentTime+(o.at||0), n=Math.floor(c.sampleRate*d);
+    const buf=c.createBuffer(1,n,c.sampleRate), ch=buf.getChannelData(0);
+    for(let i=0;i<n;i++) ch[i]=(Math.random()*2-1)*(o.grain?(Math.random()<o.grain?1:.15):1);
+    const src=c.createBufferSource(); src.buffer=buf;
+    const fl=c.createBiquadFilter(); fl.type=o.ft||'bandpass'; fl.frequency.setValueAtTime(o.f0||1200,t); if(o.f1) fl.frequency.exponentialRampToValueAtTime(o.f1,t+d); fl.Q.value=o.q||1;
+    const g=c.createGain(), v=o.vol||.12;
+    g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v,t+(o.att||.01)); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    src.connect(fl).connect(g).connect(c.destination); src.start(t); src.stop(t+d+.05);
+  }
+  const DTMF={1:[697,1209],2:[697,1336],3:[697,1477],4:[770,1209],5:[770,1336],6:[770,1477],7:[852,1209],8:[852,1336],9:[852,1477],0:[941,1336]};
+  const LIB={
+    recv:  ()=>{ tone(988,.1,{vol:.12}); tone(1319,.16,{at:.07,vol:.12}); },            // 收到訊息
+    send:  ()=>{ tone(520,.09,{type:'triangle',vol:.09,slide:880}); },                  // 送出訊息
+    notif: ()=>{ tone(784,.14,{vol:.13}); tone(1047,.14,{at:.11,vol:.13}); tone(1568,.26,{at:.22,vol:.1}); },  // 朋友傳訊息的通知
+    post:  ()=>{ tone(660,.16,{type:'triangle',vol:.12}); tone(880,.24,{at:.12,type:'triangle',vol:.12}); },   // 野灣發文通知
+    tap:   ()=>{ tone(560,.05,{type:'triangle',vol:.07}); },                            // 按按鈕
+    good:  ()=>{ tone(1175,.14,{vol:.1}); },                                              // 找到一個、選對一項
+    ok:    ()=>{ [523,659,784,1047].forEach((f,i)=>tone(f,.22,{at:i*.08,type:'triangle',vol:.12})); },   // 過關
+    ng:    ()=>{ tone(330,.16,{type:'square',vol:.05,slide:250}); tone(247,.26,{at:.14,type:'square',vol:.05,slide:180}); },  // 選錯
+    whoosh:()=>{ noise(.5,{f0:400,f1:2400,vol:.08,att:.15}); },                          // 「兩天後……」字卡
+    stamp: ()=>{ tone(140,.18,{vol:.25,slide:70}); noise(.08,{f0:900,vol:.08}); },       // 蓋章
+    pop:   ()=>{ tone(420,.07,{vol:.18,slide:160}); noise(.04,{f0:2500,vol:.06}); },     // 戳洞
+    drop:  ()=>{ tone(200,.12,{vol:.16,slide:110}); },                                    // 放進紙箱
+    tape:  ()=>{ noise(.45,{f0:1800,f1:4200,vol:.09,q:2,grain:.5}); },                  // 撕膠帶
+    flap:  ()=>{ for(let i=0;i<5;i++) noise(.07,{at:i*.09,f0:700,vol:.12}); },           // 拍翅膀
+    key:   k=>{ const p=DTMF[k]; if(p){ tone(p[0],.12,{vol:.07}); tone(p[1],.12,{vol:.07}); } },  // 撥號鍵
+    ring:  ()=>{ [0,.5].forEach(a=>{ tone(440,.4,{at:a,vol:.06}); tone(480,.4,{at:a,vol:.06}); }); },   // 電話接通前的鈴聲
+    tick:  ()=>{ tone(1600,.03,{vol:.04}); },                                             // 倒數
+    win:   ()=>{   // 結果頁：小號登場曲＋和弦＋閃亮音
+      const B={type:'sawtooth',lp:1800,vol:.07,att:.02,hold:.6};
+      [[392,0,.13],[392,.14,.13],[392,.28,.13],[523,.42,.5],[392,.95,.16],[523,1.12,.16],[659,1.29,.16],[784,1.46,.95]].forEach(([f,a,d])=>tone(f,d,Object.assign({at:a},B)));
+      [523,659,1047].forEach(f=>tone(f,.95,Object.assign({},B,{at:1.46,vol:.05})));
+      tone(131,1.1,{at:1.46,type:'triangle',vol:.12,hold:.5});
+      [2093,2637,3136,4186].forEach((f,i)=>tone(f,.35,{at:1.6+i*.07,type:'sine',vol:.04}));
+    }
+  };
+  return {
+    play(name, arg){ if(!on) return; const c=ac(); if(!c) return; try{ LIB[name](arg); }catch(e){} },
+    unlock(){ if(on) ac(); },
+    isOn(){ return on; },
+    toggle(){ on=!on; try{ localStorage.setItem('birdsos_sound', on?'on':'off'); }catch(e){} if(on){ ac(); LIB.tap&&this.play('tap'); } return on; }
+  };
+})();
+const sfx = (n, a) => SFX.play(n, a);
+// iOS 需要在玩家第一次觸碰畫面時啟動音效
+document.addEventListener('pointerdown', ()=>SFX.unlock(), {capture:true, passive:true});
+// 一般按鈕的點擊聲
+document.addEventListener('click', e=>{ if(e.target.closest('.btn, .opt, .cause, .pick2 button, #notif, .wn-x')) sfx('tap'); }, true);
+const SPK_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="#3b3631" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#3b3631"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const SPK_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="#3b3631" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#3b3631"/><path d="M17 9.5l5 5M22 9.5l-5 5"/></svg>';
+function soundBtn(){
+  let b=$('#sfx');
+  if(!b){ b=document.createElement('button'); b.id='sfx'; b.onclick=()=>{ SFX.toggle(); paint(); toast(SFX.isOn()?'音效已開啟':'音效已關閉'); }; }
+  function paint(){ b.innerHTML=SFX.isOn()?SPK_ON:SPK_OFF; b.setAttribute('aria-label', SFX.isOn()?'關閉音效':'開啟音效'); b.setAttribute('aria-pressed', SFX.isOn()?'false':'true'); }
+  paint();
+  // 結果頁：按鈕跟著內容一起捲動，才不會蓋住文字
+  const host=$('#result')||APP;
+  if(b.parentNode!==host) host.appendChild(b);
+}
+// 每次換畫面（APP.innerHTML 被清空）後，把音效按鈕放回去
+new MutationObserver(()=>{ if(!$('#sfx', APP)) soundBtn(); }).observe(APP, {childList:true});
 
 /* ---------- 美術：紙雕拼貼風 SVG ---------- */
 const DEFS = `<defs><filter id="pp" x="-8%" y="-8%" width="116%" height="116%" color-interpolation-filters="sRGB">
@@ -850,7 +1023,7 @@ ${QM(96,64)}${QM(210,40)}${QM(318,64)}
 /* ---------- 遊戲狀態 ---------- */
 let G;
 function newState(){ return { mist:0, cm:{heron:0,owl:0,barbet:0}, vit:100, vitOn:false, hints:2, cur:null, done:[], log:[] }; }
-function mistake(id){ G.mist++; G.cm[G.cur]++; if(id && !G.log.includes(id)) G.log.push(id); vib(60); track('mistake',{case:G.cur, id:id||''}); }
+function mistake(id){ G.mist++; G.cm[G.cur]++; if(id && !G.log.includes(id)) G.log.push(id); vib(60); sfx('ng'); track('mistake',{case:G.cur, id:id||''}); }
 /* 這支手機上的遊玩紀錄（最佳稱號、已解鎖的錯誤結局） */
 const REC_KEY='birdsos_record_v1';
 function loadRec(){ try{ return JSON.parse(localStorage.getItem(REC_KEY)) || {}; }catch(e){ return {}; } }
@@ -860,11 +1033,11 @@ function saveRec(r){ try{ localStorage.setItem(REC_KEY, JSON.stringify(r)); }cat
 function titleScreen(){
   APP.innerHTML='';
   const el=h(`<section class="screen" id="title">
-    ${titleArt()}
+    <img class="logo-corner" src="${logoSrc()}" alt="${esc(C.meta.org)}">
     <h1>鳥事<em>求救</em>中！</h1>
+    ${titleArt()}
     <p>${C.meta.tagline}</p>
-    <div><button class="btn pri" id="go" style="width:100%;max-width:320px;font-size:18px">${esc(C.meta.startBtn)}</button></div>
-    <p class="fine">${esc(C.meta.startNote)}</p></section>`);
+    <div class="start"><button class="btn pri" id="go" style="width:100%;max-width:320px;font-size:18px">${esc(C.meta.startBtn)}</button>${C.meta.startNote?`<small>${esc(C.meta.startNote)}</small>`:''}</div></section>`);
   APP.appendChild(el);
   $('#go').onclick=()=>playAll();
 }
@@ -898,10 +1071,10 @@ async function run(steps){ for(const st of steps) await exec(st); }
 async function exec(st){
   switch(st.t){
     case 'msg':
-      if(st.from==='me'){ addB(esc(st.s)+vt(st.v),'me'); await sleep(500); }
-      else { await typing(st.s.length); addB(esc(st.s)+vt(st.v)); await sleep(350); }
+      if(st.from==='me'){ addB(esc(st.s)+vt(st.v),'me'); sfx('send'); await sleep(500); }
+      else { await typing(st.s.length); addB(esc(st.s)+vt(st.v)); sfx('recv'); await sleep(350); }
       return;
-    case 'photo': await typing(14); addB(PHOTO[st.art]()+(st.cap?`<small>${esc(st.cap)}</small>`:''),'photo'); await sleep(700); return;
+    case 'photo': await typing(14); sfx('recv'); addB(PHOTO[st.art]()+(st.cap?`<small>${esc(st.cap)}</small>`:''),'photo'); await sleep(700); return;
     case 'reply': return reply(st);
     case 'note': return note(st.s, st.art ? ART[st.art]() : '', st.v);
     case 'card': return fullCard(st.s);
@@ -919,7 +1092,7 @@ async function reply(st){
     const i=await new Promise(r=>rep.querySelectorAll('.opt:not(.used)').forEach(b=>b.onclick=()=>r(+b.dataset.i)));
     rep.innerHTML=''; const o=st.o[i];
     const msgs=$('#msgs'), from=msgs.children.length;
-    addB(esc(o.s),'me'); await sleep(500);
+    addB(esc(o.s),'me'); sfx('send'); await sleep(500);
     if(o.ok){ if(o.then) await run(o.then); return; }
     mistake(o.id); used.add(i);
     if(o.fb) await run(o.fb);
@@ -935,14 +1108,14 @@ function note(text, art, v){
       <div class="wn-h">${wildAvatar()}<div><b>${esc(C.wild.name)}</b>${esc(C.wild.action)}・剛剛</div><button class="wn-x" id="nok" aria-label="關閉通知">✕</button></div>
       ${art?`<div class="art">${art}</div>`:''}
       <div class="txt">${esc(text)}${vt(v)}</div></div></div>`);
-    APP.appendChild(n); vib(25); $('#nok').focus();
+    APP.appendChild(n); vib(25); sfx('post'); $('#nok').focus();
     const close=()=>{ n.remove(); r(); };
     $('#nok').onclick=close;
     n.addEventListener('click', e=>{ if(e.target===n) close(); });
   });
 }
 async function fullCard(text){
-  const f=h(`<div id="ff">${esc(text)}</div>`); APP.appendChild(f);
+  const f=h(`<div id="ff">${esc(text)}</div>`); APP.appendChild(f); sfx('whoosh');
   await wait(1400); f.remove();
 }
 async function fastForward(st){
@@ -955,7 +1128,7 @@ function notify(c){
     const f=C.friends[c.friend];
     const dim=h('<div class="dim"></div>'); APP.appendChild(dim);
     const n=h(`<button id="notif"><div class="av" style="background:${f.color}">${esc(f.initial)}</div><div><div class="t">${esc(f.name)}・${esc(c.time)}</div><div class="m">${esc(c.notify)}</div></div><span class="tap">點開 ›</span></button>`);
-    APP.appendChild(n); vib(30);
+    APP.appendChild(n); vib(30); sfx('notif');
     requestAnimationFrame(()=>requestAnimationFrame(()=>n.classList.add('on')));
     n.onclick=()=>{ n.classList.remove('on'); dim.remove(); setTimeout(()=>{ n.remove(); r(); }, 250); };
   });
@@ -976,10 +1149,10 @@ async function playAll(){
     await run(c.steps);
     $('#rep').innerHTML='';
     const st=h(`<div class="stamp"><small>${String(C.cases.indexOf(c)+1).padStart(2,'0')} / 03</small>${esc(c.stamp)}</div>`);
-    $('#msgs').appendChild(st); scrollDown();
+    $('#msgs').appendChild(st); scrollDown(); sfx('stamp');
     track('case_complete',{case:c.id, mistakes:G.cm[c.id]});
     G.done.push(c.id);
-    await wait(1600);
+    await wait(1600 + (c===C.cases[C.cases.length-1] ? (C.meta.endDelay||0) : 0));
   }
   await morning();
   resultScreen();
@@ -1040,11 +1213,11 @@ GAMES.zoom = cfg => new Promise(resolve=>{
   }
   function check(vx,vy){
     keys.forEach(k=>{ if(found.has(k)) return; const [sx,sy,r]=spots[k];
-      if(Math.hypot(vx-sx,vy-sy)<r){ found.add(k); vib(20);
+      if(Math.hypot(vx-sx,vy-sy)<r){ found.add(k); vib(20); sfx('good');
         const W=zw.clientWidth; const lab=h(`<div class="spotlab">✓ ${esc(cfg.spots[k])}</div>`);
         lab.style.left=Math.min(Math.max(sx/300*W,70),W-70)+'px'; lab.style.top=(sy/300*W)+'px'; zw.appendChild(lab);
         g.foot.querySelector(`[data-k="${k}"]`).classList.add('done');
-        if(found.size===keys.length){ $('#zok').disabled=false; g.lead(esc(cfg.done)+'。牠看起來很健康。'); }
+        if(found.size===keys.length){ setTimeout(()=>sfx('ok'),150); $('#zok').disabled=false; g.lead(esc(cfg.done)+'。牠看起來很健康。'); }
       } });
   }
   requestAnimationFrame(()=>place(zw.clientWidth*.8, zw.clientWidth*.45));
@@ -1079,7 +1252,7 @@ GAMES.distance = cfg => new Promise(resolve=>{
   inp.addEventListener('input', upd); upd();
   $('#dok').onclick=async()=>{
     const s=upd(); const i=cfg.states.indexOf(s);
-    if(i===0){ g.close(); resolve(); return; }
+    if(i===0){ sfx('ok'); g.close(); resolve(); return; }
     if(i===1){ toast(cfg.alert); return; }
     mistake(cfg.wrongId); await note(cfg.fail); inp.value=50; upd();
   };
@@ -1099,7 +1272,7 @@ GAMES.find = cfg => new Promise(resolve=>{
     if(phase!==1) return;
     const t=e.target.closest('[data-t]'); const k=t&&t.dataset.t;
     if(k==='parent'){
-      phase=2; vib(30);
+      phase=2; vib(30); sfx('good');
       $('#findRing').innerHTML=`<circle class="ring" cx="860" cy="140" r="62"/>`;
       g.lead(esc(cfg.found)); msg.textContent='';
       setTimeout(startHold, 900);
@@ -1107,25 +1280,62 @@ GAMES.find = cfg => new Promise(resolve=>{
     else { msg.textContent=cfg.leaf; }
   });
   function startHold(){
+    phase=3;
+    $('#findRing').innerHTML='';   // 拿掉大貓頭鷹的圈圈，避免玩家去按牠
+    const ph=$('#ph'); if(ph) ph.style.opacity=0;
+    g.stage.style.overflow='hidden';   // 樹叢藏在畫面外，按住時才升起
     g.lead(esc(cfg.holdLead));
-    g.foot.innerHTML=`<div class="reply" id="fmsg">&nbsp;</div><button class="hold" id="hold"><i id="hp"></i><span>${esc(cfg.holdBtn)}</span></button>`;
-    const btn=$('#hold'), hp=$('#hp'), m2=$('#fmsg');
+    g.stage.insertAdjacentHTML('beforeend', `<div class="bushfg" id="bfg">${S('0 0 360 160', `<g filter="url(#pp)"><ellipse cx="40" cy="150" rx="90" ry="80" fill="#5f6f4a"/><ellipse cx="150" cy="160" rx="100" ry="76" fill="#6e7f55"/><ellipse cx="270" cy="150" rx="110" ry="84" fill="#5f6f4a"/><ellipse cx="350" cy="160" rx="70" ry="70" fill="#7d8f62"/></g><g filter="url(#pp)">${grass(0,360,160,20,60,30,GR)}</g>`, 'preserveAspectRatio="none"')}</div><div class="shush" id="shh">${esc(cfg.holding)}</div>`);
+    const bushIcon = S('0 0 46 34', `<g filter="url(#pp)"><ellipse cx="12" cy="24" rx="12" ry="10" fill="#5f6f4a"/><ellipse cx="25" cy="17" rx="13" ry="13" fill="#7d8f62"/><ellipse cx="36" cy="25" rx="10" ry="9" fill="#5f6f4a"/></g><circle cx="21" cy="22" r="2.2" fill="#3b3631"/><circle cx="29" cy="22" r="2.2" fill="#3b3631"/>`);
+    g.foot.innerHTML=`<div class="reply" id="fmsg">&nbsp;</div><div class="hidewrap"><div class="hidecue" id="hcue">${esc(cfg.holdCue)}</div><button class="hold bush" id="hold"><i id="hp"></i>${bushIcon}<span>${esc(cfg.holdBtn)}<small>${esc(cfg.holdSub)}</small></span></button></div>`;
+    const btn=$('#hold'), hp=$('#hp'), m2=$('#fmsg'), bfg=$('#bfg'), shh=$('#shh'), cue=$('#hcue');
     btn.addEventListener('contextmenu', e=>e.preventDefault());
-    let t0=0, raf=0, done=false; const DUR=4000;
-    const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/DUR); hp.style.width=(p*100)+'%'; if(p>=1){ finish(); return; } raf=requestAnimationFrame(tick); };
-    btn.addEventListener('pointerdown', e=>{ if(done) return; e.preventDefault(); try{ btn.setPointerCapture(e.pointerId); }catch(_){} t0=performance.now(); m2.textContent='噓……'; raf=requestAnimationFrame(tick); });
-    const cancel=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; hp.style.width='0'; m2.textContent=cfg.early; };
+    // 玩家去按樹上的大貓頭鷹：提示改按下面的按鈕
+    sc.addEventListener('pointerdown', ()=>{ if(done) return; m2.textContent=cfg.holdTapOwl; btn.classList.remove('shake'); void btn.offsetWidth; btn.classList.add('shake'); });
+    let t0=0, raf=0, done=false, lastSec=-1; const DUR=4000;
+    const tick=()=>{ const p=Math.min(1,(performance.now()-t0)/DUR); hp.style.width=(p*100)+'%';
+      const sec=Math.floor(p*4); if(sec!==lastSec){ lastSec=sec; if(sec<4) sfx('tick'); }
+      if(p>=1){ finish(); return; } raf=requestAnimationFrame(tick); };
+    btn.addEventListener('pointerdown', e=>{ if(done) return; e.preventDefault(); try{ btn.setPointerCapture(e.pointerId); }catch(_){} t0=performance.now(); lastSec=-1; m2.innerHTML='&nbsp;'; btn.classList.add('on'); bfg.classList.add('on'); shh.classList.add('on'); cue.classList.add('off'); raf=requestAnimationFrame(tick); });
+    const cancel=()=>{ if(done||!t0) return; cancelAnimationFrame(raf); t0=0; hp.style.width='0'; btn.classList.remove('on'); bfg.classList.remove('on'); shh.classList.remove('on'); cue.classList.remove('off'); m2.textContent=cfg.early; sfx('ng'); };
     btn.addEventListener('pointerup', cancel); btn.addEventListener('pointercancel', cancel);
     async function finish(){
-      done=true; cancelAnimationFrame(raf); $('#findRing').innerHTML='';
+      done=true; cancelAnimationFrame(raf); btn.classList.remove('on'); shh.classList.remove('on');
       sc.scrollTo({left:0, behavior:'smooth'});
-      const po=$('#parentOwl'); po.style.transform='translate(-590px,150px)';
+      const po=$('#parentOwl'); po.style.transform='translate(-590px,150px)'; sfx('flap');
       await wait(1900);
-      g.lead(esc(cfg.success));
+      bfg.classList.remove('on');
+      g.lead(esc(cfg.success)); sfx('ok');
       g.foot.innerHTML=`<button class="btn pri" id="fok">${esc(cfg.btn)}</button>`;
       $('#fok').onclick=()=>{ g.close(); resolve(); };
     }
   }
+});
+
+/* G5b 鳥籠還是紙箱 */
+GAMES.container = cfg => new Promise(resolve=>{
+  const g=openGame(cfg);
+  const cageArt = S('-44 -46 88 84', ICON.cage);
+  const boxArt = S('0 10 300 220', `<g filter="url(#pp)"><path d="M70,70 L270,70 L262,26 L78,26 Z" fill="#c9a077"/><path d="M50,90 L70,70 L32,36 L12,58 Z" fill="#c49a6c"/><path d="M50,90 L250,90 L270,70 L70,70 Z" fill="#6e5238"/><path d="M250,90 L270,70 L270,200 L250,220 Z" fill="#9a7048"/><rect x="50" y="90" width="200" height="130" fill="#b88a5a"/><path d="M250,90 L270,70 L300,92 L282,114 Z" fill="#c49a6c"/></g>`);
+  g.stage.innerHTML=`<div class="pick2"><button data-k="cage">${cageArt}<b>${esc(cfg.cage.name)}</b><small>${esc(cfg.cage.sub)}</small></button><button data-k="box">${boxArt}<b>${esc(cfg.box.name)}</b><small>${esc(cfg.box.sub)}</small></button></div>`;
+  g.foot.innerHTML=`<div class="reply" id="cmsg">&nbsp;</div>`;
+  let busy=false, wrong=false;
+  g.stage.querySelectorAll('.pick2 button').forEach(b=>b.onclick=async()=>{
+    if(busy) return; const k=b.dataset.k;
+    if(k==='cage'){
+      busy=true; b.classList.add('no');
+      if(!wrong){ wrong=true; mistake('pack_cage'); drop(5); }
+      const r=b.getBoundingClientRect(), sr=g.stage.getBoundingClientRect();
+      burst(g.stage, r.left-sr.left+r.width/2, r.top-sr.top+30, cfg.cageBurst); sfx('flap');
+      g.stage.classList.add('shake'); await wait(600); g.stage.classList.remove('shake');
+      await note(cfg.cageNote, ART.cage()); busy=false; return;
+    }
+    busy=true; b.classList.add('yes'); sfx('ok');
+    g.stage.querySelectorAll('.pick2 button').forEach(x=>x.disabled=true);
+    g.lead(esc(cfg.ok));
+    g.foot.innerHTML=`<button class="btn pri" id="cok">${esc(cfg.btn)}</button>`;
+    $('#cok').onclick=()=>{ g.close(); resolve(); };
+  });
 });
 
 /* G4 撥號 */
@@ -1139,6 +1349,7 @@ GAMES.dial = cfg => new Promise(resolve=>{
   g.stage.querySelectorAll('.keys button').forEach(b=>b.onclick=async()=>{
     if(busy) return;
     const k=b.dataset.k;
+    if(/^\d$/.test(k)) sfx('key', k);
     if(k==='⌫'){ num=num.slice(0,-1); }
     else if(k==='撥出'){
       if(num===cfg.number){ dr.innerHTML='&nbsp;'; connected(); return; }
@@ -1151,7 +1362,7 @@ GAMES.dial = cfg => new Promise(resolve=>{
     dn.innerHTML=num||'&nbsp;';
   });
   function connected(){
-    vib(40);
+    vib(40); sfx('ring');
     g.lead(esc(cfg.callLead));
     let sec=0; const picked=new Set(); let ok=0; const need=cfg.info.filter(x=>x.ok).length;
     g.stage.innerHTML=`<div style="display:grid;gap:12px;justify-items:center;width:100%"><div class="calling" id="ct">📞 通話中 00:00</div><div class="info">${cfg.info.map((x,i)=>`<button data-i="${i}">${esc(x.s)}</button>`).join('')}</div></div>`;
@@ -1159,8 +1370,8 @@ GAMES.dial = cfg => new Promise(resolve=>{
     const iv=setInterval(()=>{ sec++; const e=$('#ct'); if(e) e.textContent=`📞 通話中 ${mmss(sec)}`; else clearInterval(iv); }, 1000);
     g.stage.querySelectorAll('.info button').forEach(b=>b.onclick=()=>{
       const i=+b.dataset.i; if(picked.has(i)) return; picked.add(i); const x=cfg.info[i];
-      b.classList.add(x.ok?'ok':'no'); dr.textContent=x.r;
-      if(x.ok){ ok++; if(ok>=need){ clearInterval(iv); const ct=$('#ct'); if(ct) ct.textContent=`📞 通話結束 ${mmss(sec)}`; g.lead('通報完成！對方已經記下需要的資訊。'); g.foot.innerHTML=`<div class="reply">${esc(x.r)}</div><button class="btn pri" id="dok">${esc(cfg.btn)}</button>`; $('#dok').onclick=()=>{ g.close(); resolve(); }; } }
+      b.classList.add(x.ok?'ok':'no'); dr.textContent=x.r; if(x.ok) sfx('good');
+      if(x.ok){ ok++; if(ok>=need){ clearInterval(iv); setTimeout(()=>sfx('ok'),150); const ct=$('#ct'); if(ct) ct.textContent=`📞 通話結束 ${mmss(sec)}`; g.lead('通報完成！對方已經記下需要的資訊。'); g.foot.innerHTML=`<div class="reply">${esc(x.r)}</div><button class="btn pri" id="dok">${esc(cfg.btn)}</button>`; $('#dok').onclick=()=>{ g.close(); resolve(); }; } }
       else { drop(4); }
     });
   }
@@ -1178,7 +1389,7 @@ GAMES.tools = cfg => new Promise(resolve=>{
     const r=bird.getBoundingClientRect(), sr=g.stage.getBoundingClientRect();
     if(k==='hand'){
       mistake('barbet_hand'); drop(5);
-      $('#tbw').classList.add('flap'); g.stage.classList.add('shake');
+      $('#tbw').classList.add('flap'); g.stage.classList.add('shake'); sfx('flap');
       burst(g.stage, r.left-sr.left+r.width/2, r.top-sr.top, cfg.handBurst);
       await wait(950); $('#tbw').classList.remove('flap'); g.stage.classList.remove('shake');
       await note(cfg.handNote); busy=false; return;
@@ -1186,7 +1397,7 @@ GAMES.tools = cfg => new Promise(resolve=>{
     $('#tcover').innerHTML = k==='towel'
       ? `<g filter="url(#pp)" transform="translate(172,236)"><path d="M-70,20 C-72,-26 -30,-44 10,-42 C50,-40 78,-20 74,20 Z" fill="#8ea07a"/><path d="M-66,-6 C-30,-20 30,-22 72,-4 M-70,12 C-30,0 30,-2 74,14" stroke="#f3efe4" stroke-width="6" fill="none"/></g>`
       : `<g transform="translate(118,230) rotate(-30) scale(1.2)">${ICON.glove}</g><g transform="translate(226,232) rotate(30) scale(-1.2,1.2)">${ICON.glove}</g>`;
-    g.lead(esc(cfg.ok));
+    g.lead(esc(cfg.ok)); sfx('ok');
     g.foot.innerHTML=`<button class="btn pri" id="tok">好，捧起來了</button>`;
     $('#tok').onclick=()=>{ g.close(); resolve(); };
   }
@@ -1213,10 +1424,12 @@ GAMES.pack = cfg => new Promise(resolve=>{
     <rect id="boxFront" x="50" y="90" width="200" height="130" fill="#b88a5a"/>
     <path d="M250,90 L270,70 L300,92 L282,114 Z" fill="#c49a6c" id="flapR"/>
   </g>
-  <text x="150" y="196" text-anchor="middle" font-size="15" fill="#7a5436" font-weight="700" opacity=".7">活體動物・輕放</text>
+  
   <g id="holes"></g>
+  <g id="cueHole" pointer-events="none"><circle cx="150" cy="140" r="16" fill="none" stroke="#d9713a" stroke-width="3" stroke-dasharray="5 4" class="ring"/><g class="cue-tap"><path d="M150,94 L150,118 M140,108 L150,120 L160,108" stroke="#d9713a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></g>
   <g id="lid" hidden filter="url(#pp)"><path d="M50,90 L250,90 L270,70 L70,70 Z" fill="#c9a077"/><path d="M60,80 L260,80" stroke="#9a7048" stroke-width="2"/></g>
   <line id="tape" x1="54" y1="80" x2="264" y2="80" stroke="#e8d9a8" stroke-width="14" stroke-dasharray="210" stroke-dashoffset="210" hidden style="transition:stroke-dashoffset .5s"/>
+  <g id="cueTape" hidden pointer-events="none"><path d="M70,58 L250,58" stroke="#d9713a" stroke-width="3" stroke-dasharray="6 6" fill="none"/><path d="M250,50 L262,58 L250,66" stroke="#d9713a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g class="cue-slide"><path d="M64,44 L76,58 L64,72" stroke="#d9713a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g></g>
   <rect id="lidHit" x="30" y="40" width="260" height="70" fill="transparent" hidden/>`, 'class="stagesvg" id="psvg"');
   const svg=$('#psvg');
   g.foot.innerHTML=`<div class="check" id="pchk">${cfg.steps.map((s,i)=>`<span data-i="${i}" class="${i===0?'now':''}">${esc(s)}</span>`).join('')}</div>
@@ -1233,7 +1446,7 @@ GAMES.pack = cfg => new Promise(resolve=>{
     const p=svgPt(svg, e.clientX, e.clientY);
     const hx=Math.max(64,Math.min(236,p.x)).toFixed(1), hy=Math.max(104,Math.min(172,p.y)).toFixed(1);
     $('#holes').insertAdjacentHTML('beforeend', `<circle cx="${hx}" cy="${hy}" r="6" fill="#4a3726"/><circle cx="${hx}" cy="${hy}" r="8" fill="none" stroke="#8a6440" stroke-width="2"/>`);
-    vib(15); holes++;
+    vib(15); sfx('pop'); holes++; hideEl('#cueHole');
     if(holes>=cfg.holes) setStep(1);
   });
   const box=$('#boxFront');
@@ -1246,12 +1459,12 @@ GAMES.pack = cfg => new Promise(resolve=>{
       setTimeout(()=>note(cfg.decoys[k], ART[k]()), 550);
       return;
     }
-    if(k==='towel'){ if(step<1){ toast(cfg.needHoles); return; } showEl('#inTowel'); el.classList.add('gone'); setStep(2); return; }
+    if(k==='towel'){ if(step<1){ toast(cfg.needHoles); return; } showEl('#inTowel'); sfx('drop'); el.classList.add('gone'); setStep(2); return; }
     if(k==='bird'){
       if(step<1){ toast(cfg.needHoles); return; }
       if(step<2){ toast(cfg.needTowel); return; }
-      showEl('#inBird'); el.classList.add('gone'); setStep(3);
-      setTimeout(()=>{ $('#boxOpen').setAttribute('opacity','0'); $('#flapR').setAttribute('opacity','0'); hideEl('#inBird'); hideEl('#inTowel'); showEl('#lid'); showEl('#tape'); showEl('#lidHit'); enableTape(); }, 900);
+      showEl('#inBird'); sfx('drop'); el.classList.add('gone'); setStep(3);
+      setTimeout(()=>{ $('#boxOpen').setAttribute('opacity','0'); $('#flapR').setAttribute('opacity','0'); hideEl('#inBird'); hideEl('#inTowel'); showEl('#lid'); showEl('#tape'); showEl('#cueTape'); showEl('#lidHit'); enableTape(); }, 900);
     }
   }
   g.foot.querySelectorAll('#ptray .item').forEach(el=>{
@@ -1263,12 +1476,12 @@ GAMES.pack = cfg => new Promise(resolve=>{
     const hit=$('#lidHit'); let sx=null, taped=false;
     const W=()=>svg.getBoundingClientRect().width;
     hit.addEventListener('pointerdown', e=>{ sx=e.clientX; try{ hit.setPointerCapture(e.pointerId); }catch(_){} });
-    hit.addEventListener('pointermove', e=>{ if(sx==null||taped) return; const dx=e.clientX-sx; const p=Math.max(0,Math.min(1,dx/(W()*.55))); $('#tape').style.transition='none'; $('#tape').setAttribute('stroke-dashoffset', (210*(1-p)).toFixed(0)); if(p>=1) doTape(); });
-    hit.addEventListener('pointerup', ()=>{ if(!taped){ $('#tape').style.transition=''; $('#tape').setAttribute('stroke-dashoffset','210'); } sx=null; });
+    hit.addEventListener('pointermove', e=>{ if(sx==null||taped) return; hideEl('#cueTape'); const dx=e.clientX-sx; const p=Math.max(0,Math.min(1,dx/(W()*.55))); $('#tape').style.transition='none'; $('#tape').setAttribute('stroke-dashoffset', (210*(1-p)).toFixed(0)); if(p>=1) doTape(); });
+    hit.addEventListener('pointerup', ()=>{ if(!taped){ showEl('#cueTape'); $('#tape').style.transition=''; $('#tape').setAttribute('stroke-dashoffset','210'); } sx=null; });
     const tb=h(`<button class="btn" style="min-height:44px;font-size:14px">${esc(cfg.tapeBtn)}</button>`);
     setTimeout(()=>{ if(!taped) $('#ptray').replaceChildren(tb); }, 3500);
     tb.onclick=doTape;
-    function doTape(){ if(taped) return; taped=true; $('#tape').style.transition=''; $('#tape').setAttribute('stroke-dashoffset','0'); vib(30); setStep(4);
+    function doTape(){ if(taped) return; taped=true; hideEl('#cueTape'); $('#tape').style.transition=''; $('#tape').setAttribute('stroke-dashoffset','0'); vib(30); sfx('tape'); setTimeout(()=>sfx('ok'),450); setStep(4);
       g.lead(esc(cfg.done||''));
       $('#ptray').innerHTML=`<button class="btn pri" id="pok" style="width:100%">${esc(cfg.btn)}</button>`;
       $('#pok').onclick=()=>{ g.close(); resolve(); }; }
@@ -1279,7 +1492,7 @@ GAMES.pack = cfg => new Promise(resolve=>{
 GAMES.resist = cfg => new Promise(resolve=>{
   const g=openGame(cfg);
   Object.assign(g.stage.style,{flexDirection:'column',justifyContent:'flex-start',gap:'8px',touchAction:'pan-y'});
-  g.stage.innerHTML=`<div class="rbox">${S('0 0 300 180', `<g filter="url(#pp)"><rect x="0" y="140" width="300" height="40" fill="#cdbfa6"/><path d="M60,70 L230,70 L248,54 L78,54 Z" fill="#c9a077"/><path d="M230,70 L248,54 L248,146 L230,162 Z" fill="#9a7048"/><rect x="60" y="70" width="170" height="92" fill="#b88a5a"/></g><line x1="64" y1="62" x2="244" y2="62" stroke="#e8d9a8" stroke-width="12"/><g fill="#4a3726"><circle cx="100" cy="100" r="5"/><circle cx="145" cy="110" r="5"/><circle cx="190" cy="98" r="5"/></g><text x="145" y="148" text-anchor="middle" font-size="13" fill="#7a5436" font-weight="700" opacity=".7">活體動物・輕放</text><text x="256" y="46" font-size="18" fill="#6b635a">z</text><text x="268" y="30" font-size="14" fill="#6b635a">z</text>`, 'class="stagesvg"')}
+  g.stage.innerHTML=`<div class="rbox">${S('0 0 300 180', `<g filter="url(#pp)"><rect x="0" y="140" width="300" height="40" fill="#cdbfa6"/><path d="M60,70 L230,70 L248,54 L78,54 Z" fill="#c9a077"/><path d="M230,70 L248,54 L248,146 L230,162 Z" fill="#9a7048"/><rect x="60" y="70" width="170" height="92" fill="#b88a5a"/></g><line x1="64" y1="62" x2="244" y2="62" stroke="#e8d9a8" stroke-width="12"/><g fill="#4a3726"><circle cx="100" cy="100" r="5"/><circle cx="145" cy="110" r="5"/><circle cx="190" cy="98" r="5"/></g><text x="256" y="46" font-size="18" fill="#6b635a">z</text><text x="268" y="30" font-size="14" fill="#6b635a">z</text>`, 'class="stagesvg"')}
     <div class="timer"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="#fbf7ef" stroke="#e6dfcf" stroke-width="9"/><circle id="tr" cx="50" cy="50" r="42" fill="none" stroke="#8ea07a" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="0" transform="rotate(-90 50 50)"/></svg><b id="tn">${cfg.seconds}</b></div></div>
     <div class="momlist" id="ml" aria-live="polite"></div>`;
   g.foot.innerHTML=`<div class="reply" id="rm">等救傷單位聯絡中……</div>`;
@@ -1287,7 +1500,7 @@ GAMES.resist = cfg => new Promise(resolve=>{
   const total=cfg.seconds*1000; let elapsed=0, last=performance.now(), paused=false, fin=false, next=0, trapped=false;
   const bubble=(html, me)=>{ const d=h(me?`<div class="mb me"><div class="b me">${html}</div></div>`:`<div class="mb"><div class="av" style="background:${mom.color}">${esc(mom.initial)}</div><div style="max-width:80%"><div class="b" style="max-width:none">${html}</div></div></div>`); ml.appendChild(d); ml.scrollTo({top:ml.scrollHeight,behavior:'smooth'}); return d; };
   function spawn(m, i){
-    const d=bubble(esc(m.s)); vib(20);
+    const d=bubble(esc(m.s)); vib(20); sfx('recv');
     if(!m.trap) return;
     const b=h(`<button class="trap">${esc(m.trap)}</button>`); d.lastElementChild.appendChild(b);
     b.onclick=async()=>{
@@ -1312,8 +1525,8 @@ GAMES.resist = cfg => new Promise(resolve=>{
       g.foot.innerHTML=`<button class="btn pri" id="rfin">回覆老媽：「${esc(cfg.final)}」</button>`;
       $('#rfin').onclick=async()=>{
         g.foot.innerHTML='';
-        bubble(esc(cfg.final), true); await wait(800);
-        bubble(esc(cfg.momEnd)); await wait(1300);
+        bubble(esc(cfg.final), true); sfx('send'); await wait(800);
+        bubble(esc(cfg.momEnd)); sfx('recv'); setTimeout(()=>sfx('ok'),300); await wait(1300);
         g.close(); resolve();
       };
       return; }
@@ -1333,7 +1546,7 @@ async function morning(){
     await wait(900);
     const f=C.friends[c.friend], L=M.lines[c.friend], ok=G.cm[c.id]===0;
     $('#ml').appendChild(h(`<div class="mn"><div class="av" style="background:${f.color}">${esc(f.initial)}</div><div><div class="t">${esc(f.name)}・現在</div><div class="m">${esc(ok?L.ok:L.ng)}${vt(L.v)}</div></div></div>`));
-    vib(20);
+    vib(20); sfx('recv');
   }
   await wait(700);
   return new Promise(r=>{ const b=h(`<button class="btn pri">${esc(M.btn)}</button>`); el.appendChild(b); b.onclick=r; b.focus(); });
@@ -1368,7 +1581,6 @@ function resultScreen(){
     return `<div class="cat"><h4><i style="background:${cat.color}"></i>${esc(cat.name)}<small>－ ${esc(cat.who||'')}</small></h4>${list.length?fn(list):`<div class="none">${esc(empty)}</div>`}</div>`;
   }).join('');
   const notes=byCat(G.log, list=>`<ul class="log">${list.map(id=>{ const w=C.wrongs[id]; return `<li><span class="x">✗</span><div><b>${esc(w.name)}</b><br><span class="l">→ ${esc(w.learn)}</span></div></li>`; }).join('')}</ul>`, '這一關沒有選錯 ✓');
-  const coll=byCat(W, list=>`<div class="coll">${list.map(id=>found.has(id)?`<span class="got">${esc(C.wrongs[id].name)}</span>`:`<span>？？？</span>`).join('')}</div>`, '');
   const causes=C.more.items.map((m,i)=>`<button class="cause" data-i="${i}" aria-expanded="false" aria-controls="storybox">${esc(m.name)}</button>`).join('');
   const el=h(`<section class="screen" id="result">
     <div class="rcard">
@@ -1379,25 +1591,23 @@ function resultScreen(){
       <div class="mottos">${C.motto.map((m,i)=>`<div><b>✓</b>${esc(m)}<small>${esc(C.friends[C.cases[i].friend].name)}</small></div>`).join('')}</div>
     </div>
     <div class="acts">
-      <button class="btn pri wide" id="aimg">${esc(C.share.btnImage)}</button>
+      <button class="btn pri wide" id="aagain">${esc(C.share.btnAgain)}</button>
+      <button class="btn" id="aimg">${esc(C.share.btnImage)}</button>
       <button class="btn" id="ashare">${esc(C.share.btnShare)}</button>
-      <button class="btn" id="acopy">${esc(C.share.btnCopy)}</button>
     </div>
     <details class="fold"><summary>查看錯誤筆記 <small>${G.log.length?`這次選錯 ${G.log.length} 次`:'這次全對'}</small></summary><div class="in">${notes}</div></details>
-    <details class="fold"><summary>錯誤結局收集 <small>${found.size} / ${W.length}</small></summary><div class="in"><p class="sub" style="margin:0;font-size:13px;color:var(--ink2);line-height:1.6">每個錯誤選項都有自己的結局。這支手機已經玩了 ${rec.plays} 次。</p>${coll}</div></details>
-    <button class="btn pri wide" id="aagain" style="width:100%;margin-top:12px">${esc(C.share.btnAgain)}</button>
     <div class="report">${esc(C.report)}${vt(C.reportV)}</div>
     <div class="sec"><h3>${esc(C.more.heading)}</h3><p class="sub">${esc(C.more.sub)}</p><div class="causes">${causes}</div><div class="storybox" id="storybox" aria-live="polite"></div></div>
     <a class="btn pri orgbtn" href="${esc(C.meta.orgUrl)}" target="_blank" rel="noopener">${esc(C.meta.orgBtn)}</a>
-    <div class="foot">故事與角色為虛構；救傷做法以野灣衛教資料為準。</div>
+    <img class="logo-foot" src="${logoSrc()}" alt="${esc(C.meta.org)}">
     <input id="curl" value="${esc(url)}" readonly style="position:absolute;left:-9999px" aria-hidden="true" tabindex="-1">
   </section>`);
   APP.appendChild(el);
   $('#aimg').onclick=shareImage;
   $('#ashare').onclick=shareLink;
-  $('#acopy').onclick=copyLink;
   $('#aagain').onclick=()=>{ track('replay'); playAll(); };
   el.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{ if(d.open) track('open_section',{section:d.querySelector('summary').textContent.trim().slice(0,12)}); }));
+  // 傷病原因：點按鈕展開一句話說明＋救援故事按鈕；再點一次收合
   const sb=el.querySelector('#storybox');
   el.querySelectorAll('.cause').forEach(b=>b.onclick=()=>{
     const open=b.getAttribute('aria-expanded')==='true';
@@ -1405,10 +1615,11 @@ function resultScreen(){
     if(open){ sb.innerHTML=''; return; }
     b.setAttribute('aria-expanded','true');
     const m=C.more.items[+b.dataset.i];
-    sb.innerHTML=`<a href="${esc(m.url)}" target="_blank" rel="noopener"><div><small>野灣救援故事｜${esc(m.name)}</small><span>${esc(m.title)}</span></div></a>`;
-    sb.querySelector('a').addEventListener('click',()=>track('story_click',{cause:m.name, url:m.url}));
+    sb.innerHTML=`<div class="cz"><h4>${esc(m.name)}</h4><p>${esc(m.desc||'')}${vt(1)}</p><a href="${esc(m.url)}" target="_blank" rel="noopener">📖 ${esc(C.more.btn||'')}${esc(m.title)}</a></div>`;
+    sb.querySelector('a').addEventListener('click',()=>{ sfx('tap'); track('story_click',{cause:m.name, url:m.url}); });
     track('cause_open',{cause:m.name});
   });
+  setTimeout(()=>sfx('win'), 250);
 }
 
 /* ---------- 分享 ---------- */
