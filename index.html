@@ -415,8 +415,12 @@ const CONTENT = {
     // 下一行 trackUrl：Apps Script 部署後拿到的網址（https://script.google.com/macros/s/…/exec）
     //           留空＝不送出任何資料。設定步驟見《鳥事求救中_數據收集設定.md》
     trackUrl: 'https://script.google.com/macros/s/AKfycbwyqmjLQgbIiCpuROVbMUKX41aSBJujEAAVWr9VSVZ2Kt-9KdIMtfq263D-1EB_oQD2/exec',
-    // 要送到試算表的事件。start 開始、finish 完成、share 分享；可再加 replay、case_complete
-    trackEvents: ['start', 'finish', 'share']
+    // 要送到試算表的事件（說明見《鳥事求救中_數據收集設定.md》）
+    //   start 開始、finish 完成、share 分享、replay 再玩一次
+    //   map_open 展開救傷地圖、map_zoom 放大地圖、map_download 下載地圖
+    //   cause_open 點開傷病原因、story_click 點進野灣故事、org_click 點「認識野灣」
+    //   （還可以加 case_complete：每完成一則求救記一次）
+    trackEvents: ['start', 'finish', 'share', 'replay', 'map_open', 'map_zoom', 'map_download', 'cause_open', 'story_click', 'org_click']
   },
 
   // 答錯時跳出的「野灣剛好發文」通知
@@ -733,7 +737,7 @@ function track(name, data){
   if(!url || !(C.meta.trackEvents||[]).includes(name)) return;
   try{
     const body = JSON.stringify({ event:name, pid:PID, play:PLAY, source:SOURCE,
-      tier:data.tier||'', mistakes:(data.mistakes!=null?data.mistakes:''), method:data.method||'', result:data.result||'' });
+      tier:data.tier||'', mistakes:(data.mistakes!=null?data.mistakes:''), method:data.method||'', result:data.result||'', detail:data.cause||data.detail||'' });
     // text/plain 不會觸發跨網域預檢，Apps Script 可以直接收到；sendBeacon 在關閉頁面時也送得出去
     const blob = new Blob([body], {type:'text/plain;charset=utf-8'});
     if(!(navigator.sendBeacon && navigator.sendBeacon(url, blob))){
@@ -1661,14 +1665,15 @@ function resultScreen(){
         <div class="mapacts"><button class="btn" id="mapbig">🔍 放大看</button><button class="btn" id="mapdl">⬇️ 下載地圖</button></div>
       </div></details></div>
     <div class="sec"><h3>${esc(C.more.heading)}</h3><p class="sub">${esc(C.more.sub)}</p><div class="causes">${causes}</div><div class="storybox" id="storybox" aria-live="polite"></div></div>
-    <a class="btn pri orgbtn" href="${esc(C.meta.orgUrl)}" target="_blank" rel="noopener">${esc(C.meta.orgBtn)}</a>
+    <a class="btn pri orgbtn" id="aorg" href="${esc(C.meta.orgUrl)}" target="_blank" rel="noopener">${esc(C.meta.orgBtn)}</a>
     <img class="logo-foot" src="${logoSrc()}" alt="${esc(C.meta.org)}">
     <input id="curl" value="${esc(url)}" readonly style="position:absolute;left:-9999px" aria-hidden="true" tabindex="-1">
   </section>`);
   APP.appendChild(el);
   $('#aimg').onclick=shareImage;
   $('#ashare').onclick=shareLink;
-  $('#aagain').onclick=()=>{ track('replay'); playAll(); };
+  $('#aagain').onclick=()=>{ track('replay',{tier:T.title, mistakes:G.mist}); playAll(); };
+  $('#aorg').addEventListener('click',()=>track('org_click'));
   el.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{ if(d.open) track('open_section',{section:d.querySelector('summary').textContent.trim().slice(0,12)}); }));
   // 傷病原因：點按鈕展開一句話說明＋救援故事按鈕；再點一次收合
   const sb=el.querySelector('#storybox');
