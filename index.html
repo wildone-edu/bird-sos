@@ -7,6 +7,7 @@
 <meta name="description" content="星期六，三個朋友接連傳訊息問你：撿到鳥怎麼辦？3 分鐘學會健康成鳥不打擾、落單幼鳥找爸媽、受傷生病要通報。">
 <!-- 分享預覽（FB / LINE 貼連結時顯示）
      預覽圖是同一個資料夾裡的 og-cover.png（1200×630），要和 index.html 一起上傳到 GitHub。
+     換了預覽圖時，把下面 og:image 網址最後的 ?v=0.8 改成新的數字，LINE、FB 才會重新抓圖。
      網址一定要寫完整（https:// 開頭）；如果之後搬到野灣官網，這裡的兩個網址都要改。 -->
 <meta property="og:title" content="鳥事求救中！">
 <meta property="og:description" content="朋友撿到鳥來問你，你會怎麼回？3 分鐘挑戰：你是鳥鳥救援小菜雞，還是鳥鳥救援王？">
@@ -14,10 +15,10 @@
 <meta property="og:locale" content="zh_TW">
 <meta property="og:site_name" content="野灣野生動物保育協會">
 <meta property="og:url" content="https://wildone-edu.github.io/bird-sos/">
-<meta property="og:image" content="https://wildone-edu.github.io/bird-sos/og-cover.png">
+<meta property="og:image" content="https://wildone-edu.github.io/bird-sos/og-cover.png?v=0.8">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="鳥事求救中！黑冠麻鷺、貓頭鷹寶寶和五色鳥在池塘邊，頭上冒出問號">
+<meta property="og:image:alt" content="鳥事求救中！黑冠麻鷺、貓頭鷹寶寶和五色鳥在池塘邊，頭上冒出問號。三個朋友接連傳訊息來問你：這隻鳥怎麼辦？">
 <meta name="twitter:card" content="summary_large_image">
 <style>
 :root{
@@ -421,10 +422,10 @@ const CONTENT = {
     trackUrl: 'https://script.google.com/macros/s/AKfycbwyqmjLQgbIiCpuROVbMUKX41aSBJujEAAVWr9VSVZ2Kt-9KdIMtfq263D-1EB_oQD2/exec',
     // 要送到試算表的事件（說明見《鳥事求救中_數據收集設定.md》）
     //   start 開始、finish 完成、share 分享、replay 再玩一次
-    //   map_open 展開救傷地圖、map_zoom 放大地圖、map_download 下載地圖
+    //   map_open 展開救傷地圖
     //   cause_open 點開傷病原因、story_click 點進野灣故事、org_click 點「認識野灣」
     //   （還可以加 case_complete：每完成一則求救記一次）
-    trackEvents: ['start', 'finish', 'share', 'replay', 'map_open', 'map_zoom', 'map_download', 'cause_open', 'story_click', 'org_click']
+    trackEvents: ['start', 'finish', 'share', 'replay', 'map_open', 'cause_open', 'story_click', 'org_click']
   },
 
   // 答錯時跳出的「野灣剛好發文」通知
@@ -1039,7 +1040,7 @@ function treeScene(){
 <path d="M600,340 C604,280 596,220 612,150 L640,150 C650,220 646,290 652,340 Z" fill="#8a6a4a"/><path d="M612,210 C560,190 520,170 470,170 L472,160 C530,158 570,176 616,196 Z M640,190 C700,170 780,160 860,190 L858,200 C780,176 700,184 644,204 Z" fill="#7a5c40"/></g>
 <g filter="url(#pp)">${leaves}</g>
 <g transform="translate(470,160)" data-t="wx" style="cursor:pointer">${whiteEye()}<circle r="30" fill="transparent"/></g>
-<g transform="translate(615,108)" data-t="sp" style="cursor:pointer">${sparrow()}<circle r="30" fill="transparent"/></g>
+<g transform="translate(612,70) scale(-1,1)" data-t="sp" style="cursor:pointer">${sparrow()}<circle r="30" fill="transparent"/></g>
 <g id="parentOwl"><g transform="translate(860,150) scale(.78)" data-t="parent" style="cursor:pointer">${owlAdult()}<circle cy="-6" r="58" fill="transparent"/></g></g>
 <g filter="url(#pp)">${front}</g>
 <g filter="url(#pp)">${grass(0,1080,404,14,34,60,GRY)}</g>
@@ -1211,7 +1212,7 @@ function notify(c){
 async function playAll(){
   const again = !!PLAY;
   G=newState();
-  PLAY=Math.random().toString(36).slice(2,10);
+  PLAY=Math.random().toString(36).slice(2,10); clearBack();
   track('start',{result: again?'replay':'first'});
   APP.innerHTML=''; APP.appendChild(h(`<section class="screen" style="background:var(--paper) var(--noise)"></section>`));
   for(const c of C.cases){
@@ -1640,12 +1641,14 @@ function cardBirdsSVG(standalone){
     ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="1200" height="680">${DEFS}${inner}</svg>`
     : S('0 0 600 340', inner, 'role="img" aria-label="黑冠麻鷺、領角鴞一家和五色鳥"');
 }
-function resultScreen(){
+function resultScreen(restored){
   const T=tier();
-  track('finish',{mistakes:G.mist, tier:T.title});
-  const rec=loadRec(); rec.plays=(rec.plays||0)+1;
-  const found=new Set(rec.found||[]); G.log.forEach(id=>found.add(id)); rec.found=[...found];
-  rec.best=Math.max(rec.best==null?-1:rec.best, rankOf(T)); saveRec(rec);
+  if(!restored){   // 從外部連結回來、重新載入時，不重複記錄「完成」
+    track('finish',{mistakes:G.mist, tier:T.title});
+    const rec=loadRec(); rec.plays=(rec.plays||0)+1;
+    const found=new Set(rec.found||[]); G.log.forEach(id=>found.add(id)); rec.found=[...found];
+    rec.best=Math.max(rec.best==null?-1:rec.best, rankOf(T)); saveRec(rec);
+  }
   APP.innerHTML='';
   const url=shareUrl();
   const W=Object.keys(C.wrongs);
@@ -1675,7 +1678,7 @@ function resultScreen(){
         <div class="mapacts"><button class="btn" id="mapbig">🔍 放大看</button><button class="btn" id="mapdl">⬇️ 下載地圖</button></div>
       </div></details></div>
     <div class="sec"><h3>${esc(C.more.heading)}</h3><p class="sub">${esc(C.more.sub)}</p><div class="causes">${causes}</div><div class="storybox" id="storybox" aria-live="polite"></div></div>
-    <a class="btn pri orgbtn" id="aorg" href="${esc(C.meta.orgUrl)}" target="_blank" rel="noopener">${esc(C.meta.orgBtn)}</a>
+    <a class="btn pri orgbtn" id="aorg" href="${esc(outUrl(C.meta.orgUrl))}" target="_blank" rel="noopener">${esc(C.meta.orgBtn)}</a>
     <img class="logo-foot" src="${logoSrc()}" alt="${esc(C.meta.org)}">
     <small class="foot-made">${esc(C.meta.madeBy||'')}</small>
     <input id="curl" value="${esc(url)}" readonly style="position:absolute;left:-9999px" aria-hidden="true" tabindex="-1">
@@ -1684,7 +1687,7 @@ function resultScreen(){
   $('#aimg').onclick=shareImage;
   $('#ashare').onclick=shareLink;
   $('#aagain').onclick=()=>{ track('replay',{tier:T.title, mistakes:G.mist}); playAll(); };
-  $('#aorg').addEventListener('click',()=>track('org_click'));
+  $('#aorg').addEventListener('click',()=>{ saveBack(); track('org_click'); });
   el.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{ if(d.open) track('open_section',{section:d.querySelector('summary').textContent.trim().slice(0,12)}); }));
   // 傷病原因：點按鈕展開一句話說明＋救援故事按鈕；再點一次收合
   const sb=el.querySelector('#storybox');
@@ -1694,8 +1697,8 @@ function resultScreen(){
     if(open){ sb.innerHTML=''; return; }
     b.setAttribute('aria-expanded','true');
     const m=C.more.items[+b.dataset.i];
-    sb.innerHTML=`<div class="cz"><h4>${esc(m.name)}</h4><p>${esc(m.desc||'')}${vt(1)}</p><a href="${esc(m.url)}" target="_blank" rel="noopener">📖 ${esc(C.more.btn||'')}${esc(m.title)}</a></div>`;
-    sb.querySelector('a').addEventListener('click',()=>{ sfx('tap'); track('story_click',{cause:m.name, url:m.url}); });
+    sb.innerHTML=`<div class="cz"><h4>${esc(m.name)}</h4><p>${esc(m.desc||'')}${vt(1)}</p><a href="${esc(outUrl(m.url))}" target="_blank" rel="noopener">📖 ${esc(C.more.btn||'')}${esc(m.title)}</a></div>`;
+    sb.querySelector('a').addEventListener('click',()=>{ sfx('tap'); saveBack(); track('story_click',{cause:m.name, url:m.url}); });
     track('cause_open',{cause:m.name});
   });
   // 救傷地圖：展開／收合用 <details>；放大與下載
@@ -1704,11 +1707,10 @@ function resultScreen(){
   el.querySelector('#mapimg').onclick=openMap;
   el.querySelector('#mapbig').onclick=openMap;
   el.querySelector('#mapdl').onclick=downloadMap;
-  setTimeout(()=>sfx('win'), 250);
+  if(!restored) setTimeout(()=>sfx('win'), 250);
 }
 /* 救傷地圖：放大檢視（點圖片可再放大兩倍，雙指也能縮放） */
 function openMap(){
-  track('map_zoom');
   const ov=h(`<div id="mapov" role="dialog" aria-label="臺灣野生動物救傷地圖"><div class="mbar"><button class="btn" id="mvdl">⬇️ 下載</button><button class="btn pri" id="mvx">✕ 關閉</button></div><p>點圖片可以放大／縮小</p><div class="mview"><img src="${mapSrc()}" alt="臺灣野生動物救傷地圖"></div></div>`);
   APP.appendChild(ov);
   ov.querySelector('.mview img').onclick=()=>ov.classList.toggle('zoom');
@@ -1718,7 +1720,6 @@ function openMap(){
 }
 /* 救傷地圖：下載（手機不支援時，改成顯示圖片＋提示長按儲存） */
 async function downloadMap(){
-  track('map_download');
   try{
     const blob=await (await fetch(mapSrc())).blob();
     const file=new File([blob], C.mapFile||'rescue-map.jpg', {type:blob.type||'image/jpeg'});
@@ -1732,14 +1733,26 @@ async function downloadMap(){
   }catch(e){ openMap(); toast('長按圖片即可儲存'); }
 }
 
+/* ---------- 外部連結（野灣官網、救援故事） ----------
+   LINE 內建瀏覽器：網址加 openExternalBrowser=1，改用手機的 Safari／Chrome 開，遊戲留在 LINE 裡不會被關掉
+   其他瀏覽器：另開分頁（target="_blank"） */
+function outUrl(u){
+  if(!/\bLine\//i.test(navigator.userAgent)) return u;
+  return u + (u.includes('?') ? '&' : '?') + 'openExternalBrowser=1';
+}
+/* 點外部連結前，先記下這一輪的結果；萬一回來時頁面被重新載入（手機記憶體不足、IG／FB 內建瀏覽器），直接回到結果頁，不用重玩 */
+const BACK_KEY='birdsos_back';
+function saveBack(){ try{ sessionStorage.setItem(BACK_KEY, JSON.stringify({t:Date.now(), play:PLAY, mist:G.mist, cm:G.cm, log:G.log})); }catch(e){} }
+function loadBack(){ try{ const d=JSON.parse(sessionStorage.getItem(BACK_KEY)||'null'); if(d && Date.now()-d.t < 30*60*1000) return d; }catch(e){} return null; }
+function clearBack(){ try{ sessionStorage.removeItem(BACK_KEY); }catch(e){} }
 /* ---------- 分享 ---------- */
 function shareUrl(){ return C.meta.shareUrl || location.href.split('#')[0]; }
 function shareText(){ return C.share.text.replace('{title}', tier().title); }
 /* 分享紀錄：method＝image 限動圖／link 分享給朋友／copy 複製連結
-   result＝done 完成分享、cancel 打開後取消、saved 顯示圖片讓玩家長按儲存、copied 已複製 */
+   result＝done 完成分享、saved 顯示圖片讓玩家長按儲存、copied 已複製（打開分享選單又取消的，不記錄） */
 const shareLog=(method, result)=>track('share',{method, result, tier:tier().title});
 async function shareLink(){
-  if(navigator.share){ try{ await navigator.share({title:C.share.title, text:shareText(), url:shareUrl()}); shareLog('link','done'); return; }catch(e){ if(e.name==='AbortError'){ shareLog('link','cancel'); return; } } }
+  if(navigator.share){ try{ await navigator.share({title:C.share.title, text:shareText(), url:shareUrl()}); shareLog('link','done'); return; }catch(e){ if(e.name==='AbortError'){ return; } } }
   copyLink('link');
 }
 function copyLink(method){
@@ -1783,7 +1796,7 @@ async function shareImage(){
     const file=new File([blob],'bird-sos.png',{type:'image/png'});
     if(navigator.canShare && navigator.canShare({files:[file]})){
       try{ await navigator.share({files:[file], title:C.share.title, text:shareText()+' '+shareUrl()}); shareLog('image','done'); return; }
-      catch(e){ if(e.name==='AbortError'){ shareLog('image','cancel'); return; } }
+      catch(e){ if(e.name==='AbortError'){ return; } }
     }
     const u=URL.createObjectURL(blob);
     const ov=h(`<div id="imgov" role="dialog" aria-label="分享圖"><img src="${u}" alt="${esc(tier().title)} 分享圖"><p>長按圖片即可儲存，再分享到限時動態</p><div class="row"><a class="btn" href="${u}" download="bird-sos.png">下載圖片</a><button class="btn pri" id="ovx">關閉</button></div></div>`);
@@ -1793,7 +1806,9 @@ async function shareImage(){
 }
 
 /* ---------- 啟動 ---------- */
-titleScreen();
+(()=>{ const b=loadBack();
+  if(b){ G=Object.assign(newState(), {mist:b.mist, cm:b.cm, log:b.log}); PLAY=b.play; resultScreen(true); }
+  else titleScreen(); })();
 </script>
 </body>
 </html>
