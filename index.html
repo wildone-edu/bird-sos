@@ -90,7 +90,9 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 #rep{display:grid;gap:8px;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 14px);border-top:1.5px solid var(--line);background:var(--paper2) var(--noise)}
 #rep:empty{display:none}
 #rep .q{font-size:13px;color:var(--ink2);font-weight:700}
-.opt{min-height:54px;padding:10px 14px;text-align:left;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:15.5px;line-height:1.5;box-shadow:0 2px 0 var(--line)}
+.opt{min-height:54px;padding:10px 14px;text-align:left;border-radius:16px 16px 5px 16px;border:1.5px solid rgba(95,111,74,.45);background:var(--me);font-size:15.5px;line-height:1.5;box-shadow:0 2px 0 rgba(95,111,74,.4);margin-left:12%}
+/* 玩家的回覆選項：和「你傳出去的訊息」同樣是淺綠色、靠右，跟朋友的米色訊息區隔 */
+#rep .q{text-align:right}
 .opt:active{transform:translateY(1px)}
 .opt.used{opacity:.5;text-decoration:line-through;box-shadow:none}
 .opt.used::before{content:"✗ 試過了　";text-decoration:none;display:inline-block;color:var(--ng);font-weight:700}
@@ -295,6 +297,8 @@ input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;bac
 .story a{display:flex;align-items:center;gap:8px;margin:0 0 12px;padding:12px 14px;border-radius:12px;background:var(--paper);color:var(--ink);text-decoration:none;font-size:14.5px;font-weight:600;line-height:1.5}
 .story a::after{content:"↗";margin-left:auto;color:var(--accent);font-weight:800}
 .orgbtn{margin-top:18px;width:100%}
+/* 結果頁最下方 logo 底下的小字 */
+.foot-made{display:block;text-align:center;margin-top:6px;font-size:12px;color:#9a9188;letter-spacing:.04em}
 .ladder{display:flex;align-items:stretch;gap:4px;margin:14px 0 4px}
 .ladder>div{flex:1;padding:8px 4px;border-radius:12px;background:var(--paper);font-size:11px;text-align:center;line-height:1.35;border:2px solid transparent;color:var(--ink2);display:grid;align-content:center;gap:2px}
 .ladder>div b{font-size:12.5px;font-weight:800}
@@ -409,7 +413,7 @@ const CONTENT = {
     showVerifyTags: false,                 // 改成 true 會在畫面上顯示橘色「待查證」標籤
     gameDelay: 1000,                       // 進入小遊戲前，多停留幾毫秒讓玩家看完上一句（1000＝1 秒）
     rewindLine: '⏪ 倒帶，回到剛剛',        // 選錯之後，聊天紀錄裡的分隔線文字（上方的錯誤分支會變淡）
-    endDelay: 1500,                        // 最後一關（老媽）結束後，多停留幾毫秒讓玩家看完訊息，再進到「隔天早上」
+    endDelay: 1000,                        // 最後一關（老媽）結束後，多停留幾毫秒讓玩家看完訊息，再進到「隔天早上」
 
     // ── 數據收集（Google 試算表）──
     // 下一行 trackUrl：Apps Script 部署後拿到的網址（https://script.google.com/macros/s/…/exec）
@@ -487,7 +491,7 @@ const CONTENT = {
           spots:{ wing:'翅膀收得好好的', eye:'眼睛張開、有精神', foot:'兩腳站得很穩' },
           labels:{ wing:'翅膀', eye:'眼睛', foot:'腳' },
           done:'三個地方都正常' },
-        { t:'reply', q:'你要怎麼回學長？', o:[
+        { t:'reply', q:'要怎麼回？', o:[
           { s:'我看了一下，翅膀、眼睛、腳都正常，應該很健康，不用抓啦', ok:true },
           { s:'抓起來比較保險，帶去給獸醫看', id:'heron_grab', fb:[
             { t:'photo', art:'heronAngry', cap:'學長又傳了一張' },
@@ -518,7 +522,7 @@ const CONTENT = {
         { t:'photo', art:'owlet', cap:'小米學妹傳了一張照片' },
         { t:'msg', s:'是貓頭鷹寶寶嗎？牠好像還不太會飛，好可憐 😭' },
         { t:'msg', s:'我帶回宿舍養好不好？' },
-        { t:'reply', q:'你要怎麼回學妹？', o:[
+        { t:'reply', q:'要怎麼回？', o:[
           { s:'好啊，帶回去照顧吧', id:'owl_home', fb:[
             { t:'card', s:'⏩ 兩天後……' },
             { t:'photo', art:'owletRip', cap:'小米學妹傳了一張照片' },
@@ -528,7 +532,7 @@ const CONTENT = {
           { s:'直接裝進紙箱，送去救傷單位吧', id:'owl_box', fb:[
             { t:'card', s:'⏩ 當天晚上……' },
             { t:'photo', art:'parentSearch', cap:'小米學妹傳了一張照片' },
-            { t:'msg', s:'我晚上經過那棵樹，看到一隻大貓頭鷹在原地找來找去……牠是不是在找寶寶？' },
+            { t:'msg', s:'我晚上經過那棵樹，看到一隻貓頭鷹，該不會是牠的爸媽吧……' },
             { t:'note', s:'很多落單的鳥寶寶，爸媽其實就在附近。先退遠一點找找看，找不到再通報。' },
             { t:'card', s:'⏪ 倒帶，回到剛剛' } ] },
           { s:'先別碰牠，我們退遠一點，看看牠爸媽在不在附近', ok:true }
@@ -537,6 +541,7 @@ const CONTENT = {
           lead:'左右滑動大樹，找到躲起來的鳥爸媽，點牠一下。',
           hint:'貓頭鷹白天常躲在濃密的樹葉裡。找找看，有沒有一對圓圓的眼睛。',
           decoy:'這是綠繡眼，不是寶寶的爸媽喔。',
+          decoySparrow:'這是麻雀，不是寶寶的爸媽喔。',   // 點到綠繡眼右邊的麻雀時
           leaf:'這裡只有樹葉。',
           found:'找到了！牠在樹上盯著寶寶。',
           holdLead:'人在旁邊，牠不敢下來。要躲遠一點才行！',
@@ -549,6 +554,7 @@ const CONTENT = {
           success:'牠飛下來了，就停在寶寶旁邊！',
           btn:'太好了' },
         { t:'msg', s:'真的有大貓頭鷹飛下來了！！就在寶寶旁邊 🥹' },
+        { t:'msg', from:'me', s:'如果鳥寶寶在馬路邊、或附近有貓狗，可以先把牠移到附近安全高處。', v:1 },
         { t:'msg', from:'me', s:'如果等很久都沒看到爸媽，或寶寶看起來受傷了，再打 1999 通報。', v:1 },
         { t:'msg', s:'收到！我在遠處幫忙看著' }
       ]
@@ -563,19 +569,19 @@ const CONTENT = {
         { t:'vit', label:'五色鳥活力' },
         { t:'msg', s:'陽台有隻綠色的鳥撞到玻璃，趴著不動，眼睛閉閉的' },
         { t:'msg', s:'我先把牠放著，觀察幾天看看好不好？' },
-        { t:'reply', q:'你要怎麼回老媽？', o:[
+        { t:'reply', q:'要怎麼回？', o:[
           { s:'好啊，先觀察幾天看看', id:'barbet_wait', fb:[
             { t:'card', s:'⏩ 兩天後……' },
             { t:'drop', n:35 },
             { t:'photo', art:'barbetWorse', cap:'老媽傳了一張照片' },
             { t:'msg', s:'兩天了，牠還是趴在那裡，好像更沒力了……' },
-            { t:'note', s:'受傷生病的鳥，越早送醫越有機會。「再觀察幾天」常常讓傷勢變嚴重。' },
+            { t:'note', s:'受傷生病的鳥，越快救傷越有機會。多觀察幾天常常讓傷勢變嚴重。' },
             { t:'card', s:'⏪ 倒帶，回到剛剛' } ] },
           { s:'那妳先把牠抓進屋裡照顧', id:'barbet_keep', fb:[
             { t:'photo', art:'barbetCage', cap:'老媽傳了一張照片' },
             { t:'msg', s:'我把牠放進以前養鸚鵡的籠子，還給牠水跟木瓜，可是牠一直撞籠子……' },
             { t:'drop', n:10 },
-            { t:'note', s:'受傷的鳥需要獸醫判斷。鳥籠會讓牠驚慌撞傷，也不要自己餵水餵食，先通報！' } ] },
+            { t:'note', s:'受傷的鳥需要專業的醫療和照養。鳥籠會讓牠驚慌撞傷，也不要自己餵水餵食，先通報！' } ] },
           { s:'牠需要幫忙，我們先打 1999 通報！', ok:true }
         ]},
         { t:'msg', s:'好，可是我不太會講……你幫我打！' },
@@ -596,14 +602,14 @@ const CONTENT = {
         { t:'msg', s:'那我要怎麼把牠抓起來？' },
         { t:'game', g:'tools', title:'選一個工具', v:1,
           lead:'把工具拖到鳥身上（也可以先點工具，再點鳥）。',
-          hint:'人的手直接碰到鳥，牠會很害怕。找一樣東西隔開。',
+          hint:'人的手直接碰到鳥，可能有受傷或疾病傳染的風險。救援動物前，保護自身的安全也很重要。',
           items:{ glove:'手套', towel:'毛巾', hand:'空手' },
           handBurst:'啪啪啪！',
           handNote:'徒手抓，鳥一掙扎，人和鳥都容易受傷。用毛巾或手套輕輕蓋住，再捧起來。',
-          ok:'輕輕蓋住，再慢慢捧起來。' },
+          ok:{ towel:'輕輕包住，再慢慢捧起來。', glove:'戴上手套，慢慢捧起來。' } },   // 選對工具後的文字（毛巾、手套各一句）
         /* 選小窩：鳥籠還是紙箱（選鳥籠＝錯誤 pack_cage） */
         { t:'game', g:'container', title:'牠要待在哪裡？', v:1,
-          lead:'老媽家裡剛好有以前養鸚鵡的鳥籠，也有一個紙箱。要讓五色鳥待在哪裡？',
+          lead:'老媽家裡剛好有以前的鳥籠，也有一個紙箱。要讓五色鳥待在哪裡？',
           hint:'受傷的鳥很容易緊張。想想看：哪一個暗暗的、看不到外面？',
           cage:{ name:'鳥籠', sub:'有現成的，看得到牠' },
           box: { name:'紙箱', sub:'暗暗的，看不到外面' },
@@ -611,25 +617,25 @@ const CONTENT = {
           cageNote:'鳥籠透光又空曠，鳥一緊張就會一直撞，羽毛也會磨壞。',
           okDelay: 900 },                    // 選紙箱後停幾毫秒，直接進到布置紙箱
         { t:'game', g:'pack', title:'安置受傷的五色鳥', v:1, delay:0,   // delay:0＝不停頓，從上一關直接接過來
-          hint:'紙箱暗暗的、可以保溫，是送醫前的臨時小窩。只放牠需要的東西。',
+          hint:'紙箱暗暗的、可以保暖，只是送醫前暫時安置的小窩，只放入緩衝的墊材。',
           steps:['戳洞透氣','墊毛巾','放鳥','封箱'],
-          leads:['點紙箱正面，戳 5 個透氣洞。','把毛巾拖進紙箱墊底（也可以先點毛巾，再點紙箱）。','把五色鳥輕輕放進去。','用手指從左到右劃過紙箱上方，貼上膠帶。'],
+          leads:['點紙箱正面，戳 5 個透氣洞。','把毛巾拖進紙箱，鋪在底下。','把五色鳥輕輕放進去。','用手指從左到右劃過紙箱上方，貼上膠帶。'],
           tapLead:'再點一下紙箱。',          // 玩家先點選道具時的提示
           holes:5,
           // 道具列（由左到右的順序）。毛巾、五色鳥是正確的，其他都是干擾道具
-          items:{ towel:'毛巾', feed:'鳥飼料', bird:'五色鳥', bowl:'水', papaya:'水果' },
+          items:{ bird:'五色鳥', feed:'鳥飼料', towel:'毛巾', bowl:'水', papaya:'水果' },
           decoys:{
             feed:  '遇到傷病的鳥類，切勿餵食任何水或食物，以免導致嗆傷、消化不良等問題。野生動物的食性多樣複雜，若餵錯食物也可能造成嚴重傷害。',
             bowl:  '路上移動時一晃，水就打翻，把牠弄濕會失溫，或者讓傷口更嚴重。',
             papaya:'遇到傷病的鳥類，切勿餵食任何水或食物，以免導致嗆傷、消化不良等問題。野生動物的食性多樣複雜，若餵錯食物也可能造成嚴重傷害。' },
           decoyBurst:{ feed:'沙沙沙？', bowl:'嘩啦！', papaya:'咦？' },
           needHoles:'先幫紙箱戳幾個透氣洞。',
-          needTowel:'先墊毛巾，牠躺起來比較舒服。',
+          needTowel:'先鋪毛巾，移動過程中，牠才不會在裡面撞來撞去。',   // 還沒鋪毛巾就放鳥時的提示
           tapeLabel:'用膠帶封好',               // 封箱時，紙箱上方箭頭旁的提示字
           done:'安置完成！紙箱暗暗的、有透氣洞，牠可以安心休息。',
           btn:'安置完成' },
         { t:'game', g:'resist', title:'老媽一直想餵牠',
-          lead:'箱子封好了，可是老媽一直傳訊息來。先別答應她，等救傷單位聯絡。',
+          lead:'箱子封好了，可是老媽一直想餵牠，要回嗎？',
           hint:'想幫忙的心情很好，但現在最好的幫忙是「不打擾」。',
           seconds:9,
           mom:[
@@ -653,7 +659,7 @@ const CONTENT = {
     lines: {
       gt:  { ok:'今天晨跑又看到那隻黑冠麻鷺，還在草地上抓蚯蚓 😂',
              ng:'還好後來沒抓牠。今天那隻黑冠麻鷺還在草地上抓蚯蚓' },
-      mi:  { ok:'昨晚牠爸媽一直在附近守著！', ng:'差點就把牠帶走了，幸好有先找爸媽', v:1 },
+      mi:  { ok:'原來昨晚牠爸媽一直在附近守著！', ng:'我差點就把牠帶走了，幸好有先幫牠找爸媽', v:1 },
       mom: { ok:'救傷單位說，感謝即時送來，五色鳥正在進行醫療中', ng:'救傷單位說，下次越早通報越好', v:1 }
     },
     btn: '看看我的救援稱號'
@@ -677,28 +683,28 @@ const CONTENT = {
   },
 
   // 結果頁「野生動物為什麼會受傷？」
-  // name 傷病原因、desc 一句話說明（【需要 Sunny 查證】）、title 野灣故事標題、url 故事連結
+  // name 傷病原因、desc 一句話說明（Sunny 已提供文案，2026-10-03）、title 野灣故事標題、url 故事連結
   more: {
     heading: '野生動物為什麼會受傷？',
     sub: '點擊查看動物受傷原因，以及野灣真實救援過的動物病患們。',
     btn: '看救援故事：',                    // 按鈕上的字，後面會接故事標題
-    items: [
-      { name:'失親',     desc:'鳥寶寶在學飛時掉在地上很常見，常被誤以為是被親鳥拋棄而被人帶走；也有些是鳥巢真的被破壞、或者親鳥遇到其他危險而死亡，無法回來照顧雛幼鳥。',
-        title:'落單的小環頸雉',               url:'https://www.wildonetaiwan.org/story/914' },
-      { name:'遊蕩犬貓', desc:'犬貓並非野生動物。在外遊蕩的貓、狗常追咬野生動物，造成嚴重的傷勢甚至造成野生動物死亡。',
-        title:'疑似貓咬的紅嘴黑鵯',           url:'https://www.wildonetaiwan.org/story/712' },
-      { name:'車禍',     desc:'道路穿過動物生活的地方，牠們過馬路或在路邊覓食時，很容易被車撞到。',
-        title:'東台灣少見的黑鳶',             url:'https://www.wildonetaiwan.org/story/701' },
-      { name:'窗戶撞擊', desc:'鳥看不出透明或反光的玻璃，以為前面是天空或樹林，就直接撞上去。',
-        title:'小歪，飛往另一片藍天',         url:'https://www.wildonetaiwan.org/story/122' },
-      { name:'黏鼠板',   desc:'黏鼠板不只黏到老鼠，鳥、蛇、蜥蜴也常誤觸，越掙扎黏得越緊。',
-        title:'雨傘節被定格的覓食瞬間',       url:'https://www.wildonetaiwan.org/story/185' },
-      { name:'私養',     desc:'把野生動物帶回家養，常因為吃的、住的不對而生病，也會失去回到野外生活的能力。',
-        title:'把野生動物留在身邊的愛不是愛', url:'https://www.wildonetaiwan.org/story/551' }
+    items: [   // 按鈕順序＝這裡由上到下的順序
+      { name:'私養', desc:'將野生動物帶回家，可能因不當餵食、環境不合適或缺乏專業照顧，造成營養不良、受傷及疾病。',
+        title:'把野生動物留在身邊的愛不是愛', url:'https://www.wildonetaiwan.org/story/551' },
+      { name:'遊蕩犬貓攻擊', desc:'犬貓不是野生動物，會出於狩獵本能追逐、咬傷野生動物，即使沒有吃掉獵物，也可能造成嚴重傷勢。',
+        title:'疑似貓咬的紅嘴黑鵯', url:'https://www.wildonetaiwan.org/story/712' },
+      { name:'失親', desc:'鳥寶寶在學飛時掉在地上很常見，常被誤以為是被親鳥拋棄而被人帶走；也有些是鳥巢真的被破壞、或者親鳥遇到其他危險而死亡，無法回來照顧雛幼鳥。',
+        title:'落單的小環頸雉', url:'https://www.wildonetaiwan.org/story/914' },
+      { name:'撞擊窗戶', desc:'玻璃反射出的樹木、天空倒影，鳥類無法判斷是否是真實環境，或者看不見透明玻璃而直接撞上，造成撞擊傷害。',
+        title:'小歪，飛往另一片藍天', url:'https://www.wildonetaiwan.org/story/122' },
+      { name:'車禍', desc:'野生動物可能在穿越道路、路邊活動覓食時遭車輛撞擊，造成骨折、內出血等傷害。',
+        title:'東台灣少見的黑鳶', url:'https://www.wildonetaiwan.org/story/701' },
+      { name:'黏鼠板', desc:'野生動物可能誤觸捕鼠用的黏鼠板，導致羽毛、皮毛被黏住，甚至因掙扎而受傷、失溫或死亡。',
+        title:'雨傘節被定格的覓食瞬間', url:'https://www.wildonetaiwan.org/story/185' }
     ]
   },
 
-  report: '遇到受傷生病的野生動物，請撥 1999 通報。或與鄰近的野生動物救傷單位聯繫',   // 【需要 Sunny 查證：1999 適用範圍】
+  report: '遇到受傷生病的野生動物，請撥 1999 通報。或與鄰近的野生動物救傷單位聯繫',   // 1999 通報文字已查證（2026-10-03）
   mapBtn: '點此展開臺灣野生動物救傷地圖',    // 展開地圖的按鈕文字
   mapImage: '',                                // 救傷地圖：留空＝使用程式內建的圖；也可以填圖片網址
   mapFile: 'taiwan-wildlife-rescue-map.png',   // 下載時的檔名
@@ -756,7 +762,7 @@ const h = (html) => { const d=document.createElement('div'); d.innerHTML=html.tr
 let skipper = null;
 function sleep(ms){ return new Promise(r=>{ const t=setTimeout(()=>{ skipper=null; r(); }, ms); skipper=()=>{ clearTimeout(t); skipper=null; r(); }; }); }
 const wait = ms => new Promise(r=>setTimeout(r, ms));
-function toast(s){ let t=$('#toast'); if(!t){ t=h('<div id="toast"></div>'); APP.appendChild(t); } t.textContent=s; t.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('on'), 2000); }
+function toast(s){ let t=$('#toast'); if(!t){ t=h('<div id="toast"></div>'); APP.appendChild(t); } t.textContent=s; t.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('on'), Math.max(2000, s.length*120)); }
 function burst(parent, x, y, text){ const b=h(`<div class="burst">${esc(text)}</div>`); b.style.left=x+'px'; b.style.top=y+'px'; parent.appendChild(b); setTimeout(()=>b.remove(), 950); }
 function vib(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} }
 function inRect(x, y, el, pad=10){ const r=el.getBoundingClientRect(); return x>=r.left-pad && x<=r.right+pad && y>=r.top-pad && y<=r.bottom+pad; }
@@ -982,6 +988,9 @@ function barbet(closed=true, dull=false){
 ${eye}
 <path d="M49,-9 L70,-3 L49,3 Z" fill="#d6ccb8"/><path d="M50,-3 L66,-3" stroke="#8d8372" stroke-width="1.5"/></g>`;
 }
+function sparrow(){
+  return `<g filter="url(#pp)"><path d="M-14,4 L-27,13 L-13,11Z" fill="#6b4a2e"/><ellipse cx="0" cy="4" rx="15" ry="11" fill="#9a7048"/><ellipse cx="3" cy="9" rx="10" ry="6" fill="#ddd2bd"/><path d="M-11,-1 C-5,-4 3,-3 8,1 M-10,4 C-4,1 3,2 7,5" stroke="#4a3726" stroke-width="1.8" fill="none"/><circle cx="12" cy="-4" r="8" fill="#efe8d6"/><path d="M4,-5 C5,-13 19,-14 20,-5 Z" fill="#7a4a2a"/><circle cx="10" cy="-1" r="2.2" fill="#1f1b18"/><path d="M14,2 L19,1 L16,7Z" fill="#1f1b18"/><circle cx="15" cy="-5" r="1.8" fill="#1f1b18"/><path d="M19,-5 L25,-3 L19,-1Z" fill="#3a3a36"/></g>`;
+}
 function whiteEye(){
   return `<g filter="url(#pp)"><path d="M-14,4 L-26,10 L-14,10Z" fill="#6f8f3c"/><ellipse cx="0" cy="4" rx="15" ry="11" fill="#9ab854"/><ellipse cx="0" cy="8" rx="10" ry="6" fill="#e9e3cf"/><circle cx="12" cy="-4" r="8" fill="#9ab854"/><circle cx="14" cy="-5" r="3.6" fill="#fff"/><circle cx="14.4" cy="-5" r="2" fill="#1f1b18"/><path d="M19,-5 L26,-3 L19,-1Z" fill="#3a3a36"/></g>`;
 }
@@ -1030,6 +1039,7 @@ function treeScene(){
 <path d="M600,340 C604,280 596,220 612,150 L640,150 C650,220 646,290 652,340 Z" fill="#8a6a4a"/><path d="M612,210 C560,190 520,170 470,170 L472,160 C530,158 570,176 616,196 Z M640,190 C700,170 780,160 860,190 L858,200 C780,176 700,184 644,204 Z" fill="#7a5c40"/></g>
 <g filter="url(#pp)">${leaves}</g>
 <g transform="translate(470,160)" data-t="wx" style="cursor:pointer">${whiteEye()}<circle r="30" fill="transparent"/></g>
+<g transform="translate(615,108)" data-t="sp" style="cursor:pointer">${sparrow()}<circle r="30" fill="transparent"/></g>
 <g id="parentOwl"><g transform="translate(860,150) scale(.78)" data-t="parent" style="cursor:pointer">${owlAdult()}<circle cy="-6" r="58" fill="transparent"/></g></g>
 <g filter="url(#pp)">${front}</g>
 <g filter="url(#pp)">${grass(0,1080,404,14,34,60,GRY)}</g>
@@ -1336,19 +1346,18 @@ GAMES.find = cfg => new Promise(resolve=>{
     if(phase!==1) return;
     const t=e.target.closest('[data-t]'); const k=t&&t.dataset.t;
     if(k==='parent'){
-      phase=2; vib(30); sfx('good');
-      $('#findRing').innerHTML=`<circle class="ring" cx="860" cy="140" r="62"/>`;
-      g.lead(esc(cfg.found)); msg.textContent='';
-      setTimeout(startHold, 900);
+      phase=2; vib(30); sfx('good'); msg.textContent='';
+      $('#findRing').innerHTML=`<circle class="ring" cx="860" cy="140" r="62"/>`;   // 找到後在大貓頭鷹身上畫虛線圈圈
+      startHold();   // 找到後，下方的樹叢按鈕立刻出現
     } else if(k==='wx'){ msg.textContent=cfg.decoy; }
+    else if(k==='sp'){ msg.textContent=cfg.decoySparrow||cfg.decoy; }
     else { msg.textContent=cfg.leaf; }
   });
   function startHold(){
     phase=3;
-    $('#findRing').innerHTML='';   // 拿掉大貓頭鷹的圈圈，避免玩家去按牠
     const ph=$('#ph'); if(ph) ph.style.opacity=0;
     g.stage.style.overflow='hidden';   // 樹叢藏在畫面外，按住時才升起
-    g.lead(esc(cfg.holdLead));
+    g.lead(esc(cfg.found)+'<br>'+esc(cfg.holdLead));
     g.stage.insertAdjacentHTML('beforeend', `<div class="bushfg" id="bfg">${S('0 0 360 160', `<g filter="url(#pp)"><ellipse cx="40" cy="150" rx="90" ry="80" fill="#5f6f4a"/><ellipse cx="150" cy="160" rx="100" ry="76" fill="#6e7f55"/><ellipse cx="270" cy="150" rx="110" ry="84" fill="#5f6f4a"/><ellipse cx="350" cy="160" rx="70" ry="70" fill="#7d8f62"/></g><g filter="url(#pp)">${grass(0,360,160,20,60,30,GR)}</g>`, 'preserveAspectRatio="none"')}</div><div class="shush" id="shh">${esc(cfg.holding)}</div>`);
     const bushIcon = S('0 0 46 34', `<g filter="url(#pp)"><ellipse cx="12" cy="24" rx="12" ry="10" fill="#5f6f4a"/><ellipse cx="25" cy="17" rx="13" ry="13" fill="#7d8f62"/><ellipse cx="36" cy="25" rx="10" ry="9" fill="#5f6f4a"/></g><circle cx="21" cy="22" r="2.2" fill="#3b3631"/><circle cx="29" cy="22" r="2.2" fill="#3b3631"/>`);
     g.foot.innerHTML=`<div class="reply" id="fmsg">&nbsp;</div><div class="hidewrap"><div class="hidecue" id="hcue">${esc(cfg.holdCue)}</div><button class="hold bush" id="hold"><i id="hp"></i>${bushIcon}<span>${esc(cfg.holdBtn)}<small>${esc(cfg.holdSub)}</small></span></button></div>`;
@@ -1365,6 +1374,7 @@ GAMES.find = cfg => new Promise(resolve=>{
     btn.addEventListener('pointerup', cancel); btn.addEventListener('pointercancel', cancel);
     async function finish(){
       done=true; cancelAnimationFrame(raf); btn.classList.remove('on'); shh.classList.remove('on');
+      $('#findRing').innerHTML='';   // 大貓頭鷹飛下來時，拿掉圈圈
       sc.scrollTo({left:0, behavior:'smooth'});
       const po=$('#parentOwl'); po.style.transform='translate(-590px,150px)'; sfx('flap');
       await wait(1900);
@@ -1460,7 +1470,7 @@ GAMES.tools = cfg => new Promise(resolve=>{
     $('#tcover').innerHTML = k==='towel'
       ? `<g filter="url(#pp)" transform="translate(172,236)"><path d="M-70,20 C-72,-26 -30,-44 10,-42 C50,-40 78,-20 74,20 Z" fill="#8ea07a"/><path d="M-66,-6 C-30,-20 30,-22 72,-4 M-70,12 C-30,0 30,-2 74,14" stroke="#f3efe4" stroke-width="6" fill="none"/></g>`
       : `<g transform="translate(118,230) rotate(-30) scale(1.2)">${ICON.glove}</g><g transform="translate(226,232) rotate(30) scale(-1.2,1.2)">${ICON.glove}</g>`;
-    g.lead(esc(cfg.ok)); sfx('ok');
+    g.lead(esc(typeof cfg.ok==='object' ? (cfg.ok[k]||'') : cfg.ok)); sfx('ok');
     g.foot.innerHTML=`<button class="btn pri" id="tok">好，捧起來了</button>`;
     $('#tok').onclick=()=>{ g.close(); resolve(); };
   }
@@ -1525,7 +1535,7 @@ GAMES.pack = cfg => new Promise(resolve=>{
     if(k==='towel'){ if(step<1){ toast(cfg.needHoles); return; } showEl('#inTowel'); sfx('drop'); el.classList.add('gone'); setStep(2); return; }
     if(k==='bird'){
       if(step<1){ toast(cfg.needHoles); return; }
-      if(step<2){ toast(cfg.needTowel); return; }
+      if(step<2){ toast(cfg.needTowel); g.lead(esc(cfg.needTowel)); return; }
       showEl('#inBird'); sfx('drop'); el.classList.add('gone'); setStep(3);
       setTimeout(()=>{ $('#boxOpen').setAttribute('opacity','0'); $('#flapR').setAttribute('opacity','0'); hideEl('#inBird'); hideEl('#inTowel'); showEl('#lid'); showEl('#tape'); showEl('#cueTape'); showEl('#lidHit'); enableTape(); }, 900);
     }
@@ -1654,9 +1664,9 @@ function resultScreen(){
       <div class="mottos">${C.motto.map((m,i)=>`<div><b>✓</b>${esc(m)}<small>${esc(C.friends[C.cases[i].friend].name)}</small></div>`).join('')}</div>
     </div>
     <div class="acts">
-      <button class="btn pri wide" id="aagain">${esc(C.share.btnAgain)}</button>
       <button class="btn" id="aimg">${esc(C.share.btnImage)}</button>
       <button class="btn" id="ashare">${esc(C.share.btnShare)}</button>
+      <button class="btn pri wide" id="aagain">${esc(C.share.btnAgain)}</button>
     </div>
     <details class="fold"><summary>查看錯誤筆記 <small>${G.log.length?`這次選錯 ${G.log.length} 次`:'這次全對'}</small></summary><div class="in">${notes}</div></details>
     <div class="report">${esc(C.report)}${vt(C.reportV)}
@@ -1667,6 +1677,7 @@ function resultScreen(){
     <div class="sec"><h3>${esc(C.more.heading)}</h3><p class="sub">${esc(C.more.sub)}</p><div class="causes">${causes}</div><div class="storybox" id="storybox" aria-live="polite"></div></div>
     <a class="btn pri orgbtn" id="aorg" href="${esc(C.meta.orgUrl)}" target="_blank" rel="noopener">${esc(C.meta.orgBtn)}</a>
     <img class="logo-foot" src="${logoSrc()}" alt="${esc(C.meta.org)}">
+    <small class="foot-made">${esc(C.meta.madeBy||'')}</small>
     <input id="curl" value="${esc(url)}" readonly style="position:absolute;left:-9999px" aria-hidden="true" tabindex="-1">
   </section>`);
   APP.appendChild(el);
