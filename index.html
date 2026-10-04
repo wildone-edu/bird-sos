@@ -407,15 +407,17 @@ const CONTENT = {
     sound: true,                           // 音效預設開啟；改成 false 就預設關閉（玩家仍可在右上角切換）
     soundVolume: 1.6,                      // 音效總音量（1＝原本大小，數字越大越大聲，建議 1 到 2）
     day: '星期六',
-    shareUrl: '',                          // 【待填：正式網址】留空時自動使用目前網址
+    shareUrl: '',                          // 【待填：正式網址】留空時自動使用目前網址（不含 ? 後面的參數）
+    shareFrom: 'share',                    // 玩家分享出去的連結會自動加上 ?from=這個字，用來計算「因分享而來」的人數
     org: '野灣野生動物保育協會',
     orgUrl: 'https://www.wildonetaiwan.org/',
     orgBtn: '認識野灣野生動物保育協會',
     showVerifyTags: false,                 // 改成 true 會在畫面上顯示橘色「待查證」標籤
     gameDelay: 1000,                       // 進入小遊戲前，多停留幾毫秒讓玩家看完上一句（1000＝1 秒）
     rewindLine: '⏪ 倒帶，回到剛剛',        // 選錯之後，聊天紀錄裡的分隔線文字（上方的錯誤分支會變淡）
-    caseDelay: 2100,                       // 每位朋友（學長、學妹、老媽）的對話結束後，停留幾毫秒再出現下一個畫面（原本 1600，已加 0.5 秒）
-    endDelay: 1000,                        // 最後一關（老媽）結束後，多停留幾毫秒讓玩家看完訊息，再進到「隔天早上」
+    // 每位朋友的對話結束（蓋章）後，停留幾毫秒再出現下一個畫面（1000＝1 秒）
+    //   gt 冠廷學長 → 接學妹的通知；mi 小米學妹 → 接老媽的通知；mom 老媽 → 接「隔天早上」
+    caseDelay: { gt: 1600, mi: 2000, mom: 2800 },
 
     // ── 數據收集（Google 試算表）──
     // 下一行 trackUrl：Apps Script 部署後拿到的網址（https://script.google.com/macros/s/…/exec）
@@ -722,14 +724,21 @@ const CONTENT = {
 const PID = (()=>{ try{ let v=localStorage.getItem('birdsos_pid'); if(!v){ v=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4); localStorage.setItem('birdsos_pid', v); } return v; }catch(e){ return 'np'+Math.random().toString(36).slice(2,10); } })();
 let PLAY = '';   // 每一輪遊戲的代號，按開始或再玩一次時產生
 /* 玩家從哪裡點進來：網址上的 ?utm_source=ig 或 ?from=ig 優先，其次看 App 內建瀏覽器，再來看來源網站 */
-const SOURCE = (()=>{
+/* 在哪個 App 裡打開（另外記一欄，例如朋友從 LINE 點分享連結進來 → 來源 share、App line-app） */
+const APPNAME = (()=>{
   try{
-    const q=new URLSearchParams(location.search);
-    const u=q.get('utm_source')||q.get('from'); if(u) return u.slice(0,30);
     const ua=navigator.userAgent;
     if(/Instagram/i.test(ua)) return 'instagram-app';
     if(/FBAN|FBAV|FB_IAB/i.test(ua)) return 'facebook-app';
     if(/\bLine\//i.test(ua)) return 'line-app';
+  }catch(e){}
+  return 'browser';
+})();
+const SOURCE = (()=>{
+  try{
+    const q=new URLSearchParams(location.search);
+    const u=q.get('utm_source')||q.get('from'); if(u) return u.slice(0,30);
+    if(APPNAME!=='browser') return APPNAME;
     if(document.referrer) return new URL(document.referrer).hostname.slice(0,40);
   }catch(e){}
   return 'direct';
@@ -744,7 +753,7 @@ function track(name, data){
   const url = C.meta.trackUrl;
   if(!url || !(C.meta.trackEvents||[]).includes(name)) return;
   try{
-    const body = JSON.stringify({ event:name, pid:PID, play:PLAY, source:SOURCE,
+    const body = JSON.stringify({ event:name, pid:PID, play:PLAY, source:SOURCE, app:APPNAME,
       tier:data.tier||'', mistakes:(data.mistakes!=null?data.mistakes:''), method:data.method||'', result:data.result||'', detail:data.cause||data.detail||'' });
     // text/plain 不會觸發跨網域預檢，Apps Script 可以直接收到；sendBeacon 在關閉頁面時也送得出去
     const blob = new Blob([body], {type:'text/plain;charset=utf-8'});
@@ -786,7 +795,7 @@ const SFX = (()=>{
   let ctx=null, on=C.meta.sound!==false;
   try{ const v=localStorage.getItem('birdsos_sound'); if(v) on = v==='on'; }catch(e){}
   // （v0.7 起不再手動設定 iPhone 的 audioSession；iPhone 預設就會在靜音模式時不出聲）
-  let unlocked=false, mg=null;
+  let unlocked=false, mg=null, pend=null, pendT=0;
   // 總音量（手機喇叭比較小聲，整體放大一點）
   function master(){ if(!mg){ mg=ctx.createGain(); mg.gain.value=C.meta.soundVolume||1.6; mg.connect(ctx.destination); } return mg; }
   function ac(){
@@ -856,8 +865,17 @@ const SFX = (()=>{
     }
   };
   return {
-    play(name, arg){ if(!on) return; const c=ac(); if(!c) return; try{ LIB[name](arg); }catch(e){} },
-    unlock(){ if(on && (!unlocked || !ctx || ctx.state!=='running')) unlockNow(); },
+    // 聲音引擎醒著才播；沒醒時不排隊（排隊的聲音會在很久之後突然一起冒出來）
+    // 結果頁配樂（win）例外：先記下來，玩家下一次觸碰畫面喚醒聲音時補播（20 秒內有效）
+    play(name, arg){ if(!on) return; const c=ac(); if(!c) return;
+      if(c.state==='running'){ try{ LIB[name](arg); }catch(e){} return; }
+      if(name==='win'){ pend=name; pendT=Date.now(); }
+    },
+    unlock(){
+      if(on && (!unlocked || !ctx || ctx.state!=='running')) unlockNow();
+      if(pend && ctx){ const flush=()=>{ if(pend && ctx.state==='running' && Date.now()-pendT<20000){ const p=pend; pend=null; try{ LIB[p](); }catch(e){} } };
+        if(ctx.state==='running') flush(); else { try{ ctx.resume().then(flush).catch(()=>{}); }catch(e){} } }
+    },
     state(){ return ctx ? ctx.state : 'none'; },
     isOn(){ return on; },
     toggle(){ on=!on; try{ localStorage.setItem('birdsos_sound', on?'on':'off'); }catch(e){} if(on){ unlockNow(); LIB.tap&&this.play('tap'); } return on; }
@@ -923,30 +941,37 @@ const QM = (x,y,s=1) => `<text x="${x}" y="${y}" font-size="${26*s}" font-weight
 
 /* 黑冠麻鷺 pose：feed 低頭覓食 / up 抬頭 / stretch 伸脖子緊張 / walk 走開 */
 function heron(pose='up'){
-  const H = {feed:[74,40], up:[52,-50], stretch:[60,-88], walk:[56,-46]}[pose];
-  const [hx,hy]=H, puff=pose==='stretch', rot=pose==='feed'?58:0;
-  const neck = pose==='feed' ? `M22,-6 Q66,-14 ${hx-8},${hy-8}` : `M20,-4 Q${hx-20},${(hy-4)/2} ${hx-5},${hy+8}`;
+  // 黑冠麻鷺：身體圓胖像地瓜、脖子短粗、身體前傾（覓食時整隻往前趴，不是彎脖子）
+  const P = {
+    up:      { h:[40,-28], tilt:10 },
+    walk:    { h:[44,-22], tilt:16 },
+    stretch: { h:[46,-58], tilt:0 },
+    feed:    { h:[62,14],  tilt:26 }
+  }[pose];
+  const [hx,hy]=P.h, puff=pose==='stretch', tilt=P.tilt;
+  const neck = `M18,0 Q${(hx+18)/2+6},${(hy)/2} ${hx-4},${hy+6}`;
   const legs = pose==='walk'
-    ? `<path d="M-6,40 L-16,92 M10,40 L26,78 L40,80" stroke="#a7a35c" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-16,92 l-11,3 M-16,92 l2,7 M-16,92 l10,2" stroke="#a7a35c" stroke-width="3" stroke-linecap="round"/>`
-    : `<path d="M-6,40 L-12,92 M10,40 L14,92" stroke="#a7a35c" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M-12,92 l-11,4 M-12,92 l2,7 M-12,92 l10,3 M14,92 l-10,4 M14,92 l3,7 M14,92 l11,2" stroke="#a7a35c" stroke-width="3" stroke-linecap="round"/>`;
-  const fluff = puff ? `<path d="M-66,6 l-8,-6 l4,10 M-50,-20 l-6,-10 l10,6 M-20,-28 l-2,-12 l8,10 M10,-26 l4,-12 l2,12 M34,-16 l10,-8 l-4,12 M40,-40 l12,-4 l-8,10 M44,-64 l12,-2 l-9,8" stroke="#8b5a3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>` : '';
+    ? `<path d="M-6,40 L-16,92 M10,40 L26,78 L40,80" stroke="#8e9a72" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M-16,92 l-11,3 M-16,92 l2,7 M-16,92 l10,2" stroke="#8e9a72" stroke-width="3" stroke-linecap="round"/>`
+    : `<path d="M-6,40 L-10,92 M10,40 L14,92" stroke="#8e9a72" stroke-width="5.5" stroke-linecap="round" fill="none"/><path d="M-10,92 l-11,4 M-10,92 l2,7 M-10,92 l10,3 M14,92 l-10,4 M14,92 l3,7 M14,92 l11,2" stroke="#8e9a72" stroke-width="3" stroke-linecap="round"/>`;
+  const fluff = puff ? `<path d="M-66,6 l-8,-6 l4,10 M-50,-20 l-6,-10 l10,6 M-20,-28 l-2,-12 l8,10 M10,-26 l4,-12 l2,12 M34,-16 l10,-8 l-4,12" stroke="#8b5a3a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>` : '';
   const bars = [[-40,0],[-28,10],[-16,-4],[-4,8],[8,-2],[-34,18],[-10,20]].map(([x,y])=>`<path d="M${x},${y} q5,-3 10,0" stroke="#3f2b1f" stroke-width="2" fill="none" opacity=".55"/>`).join('');
   return `<g filter="url(#pp)">
 ${legs}
-<path d="M-58,14 L-86,32 L-62,30 Z" fill="#5a3d2b"/>
+<g transform="rotate(${tilt} 0 30)">
+<path d="M-60,14 L-84,30 L-60,30 Z" fill="#5a3d2b"/>
 ${fluff}
-<path d="M-62,12 C-54,-24 22,-30 44,-4 C56,20 22,48 -18,46 C-44,44 -66,32 -62,12 Z" fill="#8b5a3a"/>
-<path d="M-8,30 q8,4 16,0 M0,38 q8,4 16,0 M10,24 q8,4 16,0" stroke="#e9d9bd" stroke-width="2" fill="none" opacity=".5"/>
-<path d="M-58,6 C-38,-16 18,-16 34,2 C18,28 -30,36 -64,26 Z" fill="#6c4731"/>${bars}
-<path d="${neck}" stroke="#a9633a" stroke-width="${puff?30:21}" stroke-linecap="round" fill="none"/>
-<g transform="rotate(${rot} ${hx} ${hy})">
-<circle cx="${hx}" cy="${hy}" r="15" fill="#a9633a"/>
-<path d="M${hx-15},${hy-1} A15,15 0 0 1 ${hx+14},${hy-5} L${hx+2},${hy-3} Z" fill="#2c2522"/>
-<path d="M${hx-11},${hy-9} l-13,-5 l10,10 Z" fill="#2c2522"/>
-<path d="M${hx+11},${hy-2} L${hx+31},${hy+3} L${hx+11},${hy+7} Z" fill="#3e3a35"/>
-<circle cx="${hx+8}" cy="${hy+1}" r="3.6" fill="#8aa7b5"/>
-<circle cx="${hx+4}" cy="${hy-2}" r="3.8" fill="#f0c948"/><circle cx="${hx+4.5}" cy="${hy-2}" r="2" fill="#1f1b18"/><circle cx="${hx+3.6}" cy="${hy-2.8}" r=".7" fill="#fff"/>
-</g></g>`;
+<path d="M-62,14 C-60,-22 10,-34 40,-12 C60,6 46,46 -6,48 C-40,50 -64,38 -62,14 Z" fill="#9a5b36"/>
+<path d="M18,30 q8,4 16,-2 M10,38 q8,4 16,-2 M24,18 q6,4 12,0" stroke="#e9d9bd" stroke-width="2" fill="none" opacity=".45"/>
+<path d="M-58,6 C-40,-18 12,-18 30,0 C14,30 -30,38 -64,26 Z" fill="#6c4731"/>${bars}
+</g>
+<path d="${neck}" stroke="#a9633a" stroke-width="${puff?36:34}" stroke-linecap="round" fill="none"/>
+<circle cx="${hx}" cy="${hy}" r="17" fill="#a9633a"/>
+<path d="M${hx-17},${hy-1} A17,17 0 0 1 ${hx+16},${hy-6} L${hx+2},${hy-4} Z" fill="#2c2522"/>
+<path d="M${hx-12},${hy-10} l-13,-5 l10,11 Z" fill="#2c2522"/>
+<path d="M${hx+12},${hy-2} L${hx+30},${hy+4} L${hx+12},${hy+8} Z" fill="#3e3a35"/>
+<ellipse cx="${hx+7}" cy="${hy+1}" rx="7" ry="5.5" fill="#7fa3c4"/>
+<circle cx="${hx+5}" cy="${hy-1}" r="4" fill="#f0c948"/><circle cx="${hx+5.5}" cy="${hy-1}" r="2.1" fill="#1f1b18"/><circle cx="${hx+4.6}" cy="${hy-1.9}" r=".7" fill="#fff"/>
+</g>`;
 }
 /* 領角鴞幼鳥 */
 function owlet(closed=false){
@@ -1227,7 +1252,7 @@ async function playAll(){
     $('#msgs').appendChild(st); scrollDown(); sfx('stamp');
     track('case_complete',{case:c.id, mistakes:G.cm[c.id]});
     G.done.push(c.id);
-    await wait((C.meta.caseDelay||1600) + (c===C.cases[C.cases.length-1] ? (C.meta.endDelay||0) : 0));
+    const cd=C.meta.caseDelay||{}; await wait(cd[c.friend]!=null ? cd[c.friend] : 1600);
   }
   await morning();
   resultScreen();
@@ -1278,7 +1303,7 @@ GAMES.zoom = cfg => new Promise(resolve=>{
   const VB='0 0 300 300';
   const inner = `<g transform="translate(-30,-10)">${scene}</g>`;
   g.stage.innerHTML=`<div class="zoomwrap" id="zw">${S(VB, inner)}<div class="lens pulse" id="lens">${S(VB, inner)}</div></div>`;
-  const spots={ wing:[114,150,34], eye:[206,70,24], foot:[132,262,30] };
+  const spots={ wing:[114,150,34], eye:[191,101,24], foot:[132,262,30] };
   const labPos={ eye:[85,55] };   // 標籤位置（0～300 的座標）；沒列出的就顯示在找到的地方
   const found=new Set();
   const keys=Object.keys(cfg.spots);
@@ -1761,7 +1786,11 @@ function saveBack(){ try{ sessionStorage.setItem(BACK_KEY, JSON.stringify({t:Dat
 function loadBack(){ try{ const d=JSON.parse(sessionStorage.getItem(BACK_KEY)||'null'); if(d && Date.now()-d.t < 30*60*1000) return d; }catch(e){} return null; }
 function clearBack(){ try{ sessionStorage.removeItem(BACK_KEY); }catch(e){} }
 /* ---------- 分享 ---------- */
-function shareUrl(){ return C.meta.shareUrl || location.href.split('#')[0]; }
+/* 分享出去的連結：一律換成「網址?from=share」，朋友點進來就會記成「因分享而來」，不會沿用分享者的 fbpost 等標記 */
+function shareUrl(){
+  try{ const u=new URL(C.meta.shareUrl || (location.origin+location.pathname)); u.search=''; u.hash=''; u.searchParams.set('from', C.meta.shareFrom||'share'); return u.toString(); }
+  catch(e){ return C.meta.shareUrl || (location.origin+location.pathname); }
+}
 function shareText(){ return C.share.text.replace('{title}', tier().title); }
 /* 分享紀錄：method＝image 限動圖／link 分享給朋友／copy 複製連結
    result＝done 完成分享、saved 顯示圖片讓玩家長按儲存、copied 已複製（打開分享選單又取消的，不記錄） */
