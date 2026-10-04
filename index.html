@@ -414,6 +414,7 @@ const CONTENT = {
     showVerifyTags: false,                 // 改成 true 會在畫面上顯示橘色「待查證」標籤
     gameDelay: 1000,                       // 進入小遊戲前，多停留幾毫秒讓玩家看完上一句（1000＝1 秒）
     rewindLine: '⏪ 倒帶，回到剛剛',        // 選錯之後，聊天紀錄裡的分隔線文字（上方的錯誤分支會變淡）
+    caseDelay: 2100,                       // 每位朋友（學長、學妹、老媽）的對話結束後，停留幾毫秒再出現下一個畫面（原本 1600，已加 0.5 秒）
     endDelay: 1000,                        // 最後一關（老媽）結束後，多停留幾毫秒讓玩家看完訊息，再進到「隔天早上」
 
     // ── 數據收集（Google 試算表）──
@@ -1226,7 +1227,7 @@ async function playAll(){
     $('#msgs').appendChild(st); scrollDown(); sfx('stamp');
     track('case_complete',{case:c.id, mistakes:G.cm[c.id]});
     G.done.push(c.id);
-    await wait(1600 + (c===C.cases[C.cases.length-1] ? (C.meta.endDelay||0) : 0));
+    await wait((C.meta.caseDelay||1600) + (c===C.cases[C.cases.length-1] ? (C.meta.endDelay||0) : 0));
   }
   await morning();
   resultScreen();
@@ -1246,6 +1247,10 @@ function openGame(cfg){
 }
 /* 拖曳（也支援先點選再點目標） */
 function draggable(el, onDrop, onTap){
+  // 拖曳道具時，滑動只給遊戲用，擋住臉書、LINE 等 App 內瀏覽器的滑動關閉手勢
+  const blk=e=>{ if(!el.classList.contains('gone')) e.preventDefault(); };
+  el.addEventListener('touchstart', blk, {passive:false});
+  el.addEventListener('touchmove', blk, {passive:false});
   el.addEventListener('pointerdown', e=>{
     if(el.classList.contains('gone')) return;
     e.preventDefault();
@@ -1274,6 +1279,7 @@ GAMES.zoom = cfg => new Promise(resolve=>{
   const inner = `<g transform="translate(-30,-10)">${scene}</g>`;
   g.stage.innerHTML=`<div class="zoomwrap" id="zw">${S(VB, inner)}<div class="lens pulse" id="lens">${S(VB, inner)}</div></div>`;
   const spots={ wing:[114,150,34], eye:[206,70,24], foot:[132,262,30] };
+  const labPos={ eye:[85,55] };   // 標籤位置（0～300 的座標）；沒列出的就顯示在找到的地方
   const found=new Set();
   const keys=Object.keys(cfg.spots);
   g.foot.innerHTML=`<div class="check">${keys.map(k=>`<span data-k="${k}">${esc(cfg.labels[k])}</span>`).join('')}</div><button class="btn pri" id="zok" disabled>${esc(cfg.done)}</button>`;
@@ -1290,7 +1296,8 @@ GAMES.zoom = cfg => new Promise(resolve=>{
     keys.forEach(k=>{ if(found.has(k)) return; const [sx,sy,r]=spots[k];
       if(Math.hypot(vx-sx,vy-sy)<r){ found.add(k); vib(20); sfx('good');
         const W=zw.clientWidth; const lab=h(`<div class="spotlab">✓ ${esc(cfg.spots[k])}</div>`);
-        lab.style.left=Math.min(Math.max(sx/300*W,70),W-70)+'px'; lab.style.top=(sy/300*W)+'px'; zw.appendChild(lab);
+        const [lx,ly]=labPos[k]||[sx,sy];   // 標籤顯示位置（眼睛的標籤移到頭部左邊，不擋住頭和眼睛）
+        lab.style.left=Math.min(Math.max(lx/300*W,70),W-70)+'px'; lab.style.top=(ly/300*W)+'px'; zw.appendChild(lab);
         g.foot.querySelector(`[data-k="${k}"]`).classList.add('done');
         if(found.size===keys.length){ setTimeout(()=>sfx('ok'),150); $('#zok').disabled=false; g.lead(esc(cfg.done)+'。牠看起來很健康。'); }
       } });
@@ -1301,6 +1308,9 @@ GAMES.zoom = cfg => new Promise(resolve=>{
     const W=zw.clientWidth;
     place(Math.max(0,Math.min(W,x)), Math.max(0,Math.min(W,y-64)));
     check(x/W*300, y/W*300); };
+  // 移動放大鏡時，滑動只給遊戲用，擋住臉書（往右滑）、LINE（往下拉）的關閉手勢
+  zw.addEventListener('touchstart', e=>e.preventDefault(), {passive:false});
+  zw.addEventListener('touchmove', e=>e.preventDefault(), {passive:false});
   zw.addEventListener('pointerdown', e=>{ e.preventDefault(); try{ zw.setPointerCapture(e.pointerId); }catch(_){} onMove(e); zw.addEventListener('pointermove', onMove); });
   const end=()=>zw.removeEventListener('pointermove', onMove);
   zw.addEventListener('pointerup', end); zw.addEventListener('pointercancel', end);
@@ -1438,6 +1448,7 @@ GAMES.dial = cfg => new Promise(resolve=>{
   function connected(){
     vib(40); sfx('ring');
     g.lead(esc(cfg.callLead));
+    g.stage.style.alignItems='flex-start'; g.stage.style.paddingTop='4px';   // 選項往上貼近題目，不要離太遠
     let sec=0; const picked=new Set(); let ok=0; const need=cfg.info.filter(x=>x.ok).length;
     g.stage.innerHTML=`<div style="display:grid;gap:12px;justify-items:center;width:100%"><div class="calling" id="ct">📞 通話中 00:00</div><div class="info">${cfg.info.map((x,i)=>`<button data-i="${i}">${esc(x.s)}</button>`).join('')}</div></div>`;
     const mmss=n=>String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');
