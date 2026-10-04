@@ -1549,6 +1549,10 @@ GAMES.pack = cfg => new Promise(resolve=>{
   function enableTape(){
     const hit=$('#lidHit'); let sx=null, taped=false;
     const W=()=>svg.getBoundingClientRect().width;
+    // 封箱時，在紙箱區域的滑動只給遊戲用，試著擋住臉書等 App 內瀏覽器「往右滑＝關閉網頁」的手勢
+    const blk=e=>{ if(!taped) e.preventDefault(); };
+    g.stage.addEventListener('touchstart', blk, {passive:false});
+    g.stage.addEventListener('touchmove', blk, {passive:false});
     hit.addEventListener('pointerdown', e=>{ sx=e.clientX; try{ hit.setPointerCapture(e.pointerId); }catch(_){} });
     hit.addEventListener('pointermove', e=>{ if(sx==null||taped) return; hideEl('#cueTape'); const dx=e.clientX-sx; const p=Math.max(0,Math.min(1,dx/(W()*.55))); $('#tape').style.transition='none'; $('#tape').setAttribute('stroke-dashoffset', (210*(1-p)).toFixed(0)); if(p>=1) doTape(); });
     hit.addEventListener('pointerup', ()=>{ if(!taped){ showEl('#cueTape'); $('#tape').style.transition=''; $('#tape').setAttribute('stroke-dashoffset','210'); } sx=null; });
